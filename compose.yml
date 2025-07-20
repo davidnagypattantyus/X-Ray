@@ -1,0 +1,170 @@
+version: '3.8'
+services:
+  
+  dashboard:
+    build:
+      context: .
+      dockerfile: Dashboard/Dockerfile.Dashboard
+    image: daq-dashboard:latest
+    container_name: dashboard
+    volumes:
+      - ./config.env:/app/config.env
+    ports:
+      - "8080:80"
+    environment:
+      - REDIS_HOST=redis
+      - INFLUXDB_HOST=influxdb
+      - GRAFANA_URL=http://grafana:3000
+      - INFLUXDB_URL=http://influxdb:8086
+      - PORTAINER_URL=http://portainer:9000
+    depends_on:
+      - redis
+      - influxdb
+      - grafana
+      - portainer
+    networks:
+      - app-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+  
+  logger:
+    build:
+      context: .
+      dockerfile: Logger/Dockerfile.Logger
+    image: daq-logger:latest
+    container_name: logger
+    volumes:
+      - ./config.env:/app/config.env
+      - /var/run/docker.sock:/var/run/docker.sock
+    group_add:
+      - "${DOCKER_GROUP_ID:-991}"
+    environment:
+      - REDIS_HOST=redis
+      - INFLUXDB_HOST=influxdb
+      - INFLUXDB_PORT=8086
+      - INFLUXDB_ORG=DAQ
+      - INFLUXDB_BUCKET=logger
+      - INFLUXDB_TOKEN=8_qFm2VXj6ri_SVbdtzaVP7KiC1A45RMCCvEkLeGzwPUe8otW8N0bsjHoSHm6w3u3Jvg6vDcNJ193ris9VUa0w==
+    depends_on:
+      - redis
+      - influxdb
+    networks:
+      - app-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import redis; redis.Redis(host='redis').ping()"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    ports:
+      - "9000:9000"
+      - "9443:9443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    container_name: redis
+    networks:
+      - app-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    mem_limit: 256M
+    memswap_limit: 512M
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_SECURITY_ADMIN_USER=admin
+    networks:
+      - app-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  influxdb:
+    image: influxdb:latest
+    container_name: influxdb
+    ports:
+      - "8086:8086"
+    volumes:
+      - influxdb_data:/var/lib/influxdb2
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=DAQ
+      - DOCKER_INFLUXDB_INIT_PASSWORD=adminadmin
+      - DOCKER_INFLUXDB_INIT_ORG=DAQ
+      - DOCKER_INFLUXDB_INIT_BUCKET=logger
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=8_qFm2VXj6ri_SVbdtzaVP7KiC1A45RMCCvEkLeGzwPUe8otW8N0bsjHoSHm6w3u3Jvg6vDcNJ193ris9VUa0w==
+    networks:
+      - app-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8086/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  ui:
+    build:
+      context: .
+      dockerfile: UI/Dockerfile.UI
+    image: daq-ui:latest
+    container_name: ui
+    volumes:
+      - ./config.env:/app/config.env
+    ports:
+      - "8081:8081"
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - UI_PORT=8081
+    networks:
+      - app-network
+    depends_on:
+      - redis
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  portainer_data:
+  redis_data:
+  grafana_data:
+  influxdb_data:

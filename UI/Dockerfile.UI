@@ -1,0 +1,19 @@
+FROM python:3.11-slim
+
+# Set the working directory
+WORKDIR /app
+
+# Copy requirements from root  
+COPY requirements.txt .
+
+# Install dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy UI application
+COPY UI/ .
+
+# Expose port
+EXPOSE 8081
+
+# Run the UI application
+CMD ["python", "UI.py"] 

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>X-Ray Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            text-align: center;
+            background: white;
+            padding: 3rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            max-width: 800px;
+            margin: 2rem;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 1rem;
+            font-size: 2.5rem;
+        }
+        p {
+            color: #666;
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+        .status {
+            background: #28a745;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            display: inline-block;
+            margin: 1rem 0;
+        }
+        .links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        .link {
+            background: #007bff;
+            color: white;
+            padding: 1rem 1.5rem;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100px;
+        }
+        .link:hover {
+            background: #0056b3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .link-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        .link-title {
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+        }
+        .link-desc {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        .demo-links {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 10px;
+            margin: 2rem 0;
+        }
+        .demo-links h3 {
+            color: #333;
+            margin-bottom: 1rem;
+        }
+        .demo-link {
+            background: #17a2b8;
+            margin: 0.5rem;
+        }
+        .demo-link:hover {
+            background: #138496;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 X-Ray Dashboard</h1>
+        <p>Welcome to the X-Ray Dashboard! Monitor your DAQ system and interact with Redis and InfluxDB databases.</p>
+        
+        <div class="status">
+            ✅ Dashboard v2.0 is running
+        </div>
+        
+        <div class="demo-links">
+            <h3>📊 Database Demo Pages</h3>
+            <div class="links">
+                <a href="/redis" class="link demo-link">
+                    <div class="link-icon">🗄️</div>
+                    <div class="link-title">Redis Demo</div>
+                    <div class="link-desc">Read and write key-value data</div>
+                </a>
+                <a href="/influxdb" class="link demo-link">
+                    <div class="link-icon">📈</div>
+                    <div class="link-title">InfluxDB Demo</div>
+                    <div class="link-desc">Time-series data operations</div>
+                </a>
+            </div>
+        </div>
+
+        <div class="links">
+            <a href="/health" class="link">
+                <div class="link-icon">🏥</div>
+                <div class="link-title">Health Check</div>
+                <div class="link-desc">System status</div>
+            </a>
+            <a href="/api/info" class="link">
+                <div class="link-icon">ℹ️</div>
+                <div class="link-title">System Info</div>
+                <div class="link-desc">API information</div>
+            </a>
+            <a href="http://localhost:3000" class="link" target="_blank">
+                <div class="link-icon">📊</div>
+                <div class="link-title">Grafana</div>
+                <div class="link-desc">Data visualization</div>
+            </a>
+            <a href="http://localhost:9000" class="link" target="_blank">
+                <div class="link-icon">🐳</div>
+                <div class="link-title">Portainer</div>
+                <div class="link-desc">Container management</div>
+            </a>
+            <a href="http://localhost:8081" class="link" target="_blank">
+                <div class="link-icon">🎛️</div>
+                <div class="link-title">UI Controls</div>
+                <div class="link-desc">System interface</div>
+            </a>
+        </div>
+        
+        <p style="margin-top: 2rem; font-size: 1rem; color: #888;">
+            This dashboard provides direct access to Redis and InfluxDB for testing and monitoring your X-Ray DAQ system.
+        </p>
+    </div>
+</body>
+</html> 
