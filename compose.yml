@@ -16,12 +16,10 @@ services:
       - INFLUXDB_HOST=influxdb
       - GRAFANA_URL=http://grafana:3000
       - INFLUXDB_URL=http://influxdb:8086
-      - PORTAINER_URL=http://portainer:9000
     depends_on:
       - redis
       - influxdb
       - grafana
-      - portainer
     networks:
       - app-network
     restart: unless-stopped
@@ -60,20 +58,6 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
-
-
-  portainer:
-    image: portainer/portainer-ce:latest
-    container_name: portainer
-    ports:
-      - "9000:9000"
-      - "9443:9443"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - portainer_data:/data
-    networks:
-      - app-network
-    restart: unless-stopped
 
   redis:
     image: redis:latest
@@ -135,36 +119,11 @@ services:
       timeout: 10s
       retries: 3
 
-  ui:
-    build:
-      context: .
-      dockerfile: UI/Dockerfile.UI
-    image: daq-ui:latest
-    container_name: ui
-    volumes:
-      - ./config.env:/app/config.env
-    ports:
-      - "8081:8081"
-    environment:
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-      - UI_PORT=8081
-    networks:
-      - app-network
-    depends_on:
-      - redis
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8081"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-
 networks:
   app-network:
     driver: bridge
 
 volumes:
-  portainer_data:
   redis_data:
   grafana_data:
   influxdb_data:
