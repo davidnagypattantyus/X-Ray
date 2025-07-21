@@ -46,10 +46,10 @@ RUN cd /tmp && \
     cd / && rm -rf /tmp/*
 
 # Copy the requirements file that lists all other Python packages
-COPY camera_requirements.txt .
+COPY requirements.txt .
 
 # Install all other Python dependencies
-RUN pip install -r camera_requirements.txt
+RUN pip install -r requirements.txt
 
 # Copy the camera test script into the container
 COPY camera_test.py .
