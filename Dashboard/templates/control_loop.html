@@ -8,7 +8,7 @@
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap');
         
         body {
-            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: 'DIN', 'Arial', sans-serif;
             margin: 0;
             padding: 20px;
             background-color: #1a1a1a;
@@ -73,7 +73,7 @@
             border-radius: 8px;
             background-color: #404040;
             color: #ffffff;
-            font-family: 'DM Sans', sans-serif;
+            font-family: 'DIN', sans-serif;
             font-size: 16px;
             font-weight: 500;
             box-sizing: border-box;
@@ -89,7 +89,7 @@
             border-radius: 8px;
             border: 1px solid #555555;
             color: #ffffff;
-            font-family: 'DM Sans', monospace;
+            font-family: 'DIN', monospace;
             font-size: 16px;
             font-weight: 600;
             text-align: center;
@@ -117,7 +117,7 @@
             transition: all 0.2s ease;
             letter-spacing: 0.01em;
             text-transform: uppercase;
-            font-family: 'DM Sans', sans-serif;
+            font-family: 'DIN', sans-serif;
         }
         .button:hover {
             background-color: #777777;
@@ -221,33 +221,33 @@
         .update-time {
             color: #b0b0b0;
             font-size: 12px;
-            font-family: 'DM Sans', monospace;
+            font-family: 'DIN', monospace;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>X-Ray Tube Control</h1>
+        <h1>X-RAY TUBE CONTROL</h1>
         
         <div id="messageArea"></div>
         
         <div class="status-panel">
             <div class="status-grid">
                 <div class="status-item">
-                    <div class="status-label">System Status</div>
-                    <div id="systemStatus" class="status-value status-good">Initializing...</div>
+                                    <div class="status-label">SYSTEM STATUS</div>
+                <div id="systemStatus" class="status-value status-good">INITIALIZING...</div>
                 </div>
                 <div class="status-item">
-                    <div class="status-label">Control Loop</div>
-                    <div id="loopStatus" class="status-value status-good">Stopped</div>
+                                    <div class="status-label">CONTROL LOOP</div>
+                <div id="loopStatus" class="status-value status-good">STOPPED</div>
                 </div>
                 <div class="status-item">
-                    <div class="status-label">Tube Power</div>
-                    <div id="tubePower" class="status-value">0 W</div>
+                                    <div class="status-label">TUBE POWER</div>
+                <div id="tubePower" class="status-value">0 W</div>
                 </div>
                 <div class="status-item">
-                    <div class="status-label">Last Update</div>
-                    <div id="lastUpdate" class="status-value update-time">Never</div>
+                                    <div class="status-label">LAST UPDATE</div>
+                <div id="lastUpdate" class="status-value update-time">NEVER</div>
                 </div>
             </div>
         </div>

@@ -8,7 +8,7 @@
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap');
         
         body {
-            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: 'DIN', 'Arial', sans-serif;
             margin: 0;
             padding: 20px;
             background-color: #1a1a1a;
@@ -41,7 +41,7 @@
         }
         .image-display {
             background-color: #333333;
-            border-radius: 12px;
+            border-radius: 4px;
             padding: 0;
             text-align: center;
             width: 100%;
@@ -107,7 +107,7 @@
             margin-bottom: 12px;
             background-color: #404040;
             color: #ffffff;
-            font-family: 'DM Sans', sans-serif;
+            font-family: 'DIN', sans-serif;
         }
         input[type="range"] {
             height: 44px;
@@ -144,7 +144,7 @@
             margin-bottom: 12px;
             letter-spacing: 0.01em;
             text-transform: uppercase;
-            font-family: 'DM Sans', sans-serif;
+            font-family: 'DIN', sans-serif;
         }
         .button:hover {
             background-color: #777777;
@@ -185,7 +185,7 @@
         }
         .status-value {
             color: #ffffff;
-            font-family: 'DM Sans', monospace;
+            font-family: 'DIN', monospace;
             font-size: 14px;
             font-weight: 600;
         }
@@ -230,23 +230,23 @@
         
         .grid-line {
             position: absolute;
-            background-color: #ff0000;
+            background-color: #ffb000;
         }
         
         .grid-line.vertical {
             width: 1.5px;
             height: 20px;
-            top: 0;
+            top: 5px;
         }
         
         .grid-line.horizontal {
             width: 20px;
             height: 1.5px;
-            left: 0;
+            left: 5px;
         }
         
         .grid-line.vertical.bottom {
-            bottom: 0;
+            bottom: 5px;
             top: auto;
         }
         
@@ -265,7 +265,7 @@
         
                 .axis-tick {
             position: absolute;
-            color: #ff0000;
+            color: #ffb000;
             font-size: 12px;
             font-weight: 700;
             background: none !important;
@@ -276,17 +276,17 @@
             outline: none !important;
             box-shadow: none !important;
             text-shadow: none !important;
-            -webkit-text-stroke: 0.5px #000000;
-            font-family: 'DM Sans', monospace;
+
+            font-family: 'DIN', monospace;
         }
         
         .x-tick {
-            bottom: 4px; /* Center 12px text in 20px space: 10px center - 6px half-height = 4px from bottom */
+            bottom: 9px; /* Positioned 9px from bottom of image */
             transform: translateX(-50%);
         }
         
         .y-tick {
-            left: 10px; /* Halfway between image border and tick end (20px tick / 2) */
+            left: 15px; /* Center between tick ends (5px and 25px): 15px from left */
             transform: translateY(-50%);
         }
         
@@ -333,7 +333,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>FLIR Camera Control</h1>
+        <h1>FLIR CAMERA CONTROL</h1>
         
         <div id="messageArea"></div>
         
@@ -342,8 +342,8 @@
                 <div class="image-container">
                     <img id="cameraImage" class="camera-image" style="display: none;" alt="Camera capture">
                     <div id="imagePlaceholder" class="image-placeholder">
-                        <p>No image captured yet</p>
-                        <p>Click "Take Exposure" to capture an image</p>
+                        <p>NO IMAGE CAPTURED YET</p>
+                        <p>CLICK "TAKE EXPOSURE" TO CAPTURE AN IMAGE</p>
                     </div>
                     <div class="coordinate-overlay" id="coordinateOverlay" style="display: none;">
                         <!-- Grid lines -->
@@ -403,52 +403,52 @@
             
             <div class="controls-panel">
                 <div class="status-panel">
-                    <h3>Camera Status</h3>
+                    <h3>CAMERA STATUS</h3>
                     <div class="status-item">
-                        <span class="status-label">Initialized:</span>
-                        <span id="cameraStatus" class="status-value">Checking...</span>
+                        <span class="status-label">INITIALIZED:</span>
+                        <span id="cameraStatus" class="status-value">CHECKING...</span>
                     </div>
                     <div class="status-item">
-                        <span class="status-label">Resolution:</span>
+                        <span class="status-label">RESOLUTION:</span>
                         <span id="resolutionStatus" class="status-value">-</span>
                     </div>
                     <div class="status-item">
-                        <span class="status-label">Current ISO:</span>
+                        <span class="status-label">CURRENT ISO:</span>
                         <span id="currentISO" class="status-value">-</span>
                     </div>
                 </div>
                 
                 <div class="capture-section">
-                    <h3>Capture Control</h3>
-                    <button id="captureBtn" class="button capture">Take Exposure</button>
+                    <h3>CAPTURE CONTROL</h3>
+                    <button id="captureBtn" class="button capture">TAKE EXPOSURE</button>
                 </div>
                 
                 <div class="control-group">
-                    <h3>Image Control</h3>
-                    <button id="saveImageBtn" class="button save">Save Current Image</button>
-                    <button id="toggleOverlayBtn" class="button">Toggle Coordinate Overlay</button>
+                    <h3>IMAGE CONTROL</h3>
+                    <button id="saveImageBtn" class="button save">SAVE CURRENT IMAGE</button>
+                    <button id="toggleOverlayBtn" class="button">TOGGLE COORDINATE OVERLAY</button>
                 </div>
                 
                 <div class="control-group">
-                    <h3>Camera Settings</h3>
+                    <h3>CAMERA SETTINGS</h3>
                     
                     <div class="control-item">
-                        <label for="exposureInput">Exposure Time (ms):</label>
-                        <input type="number" id="exposureInput" min="10" max="5000" step="1" value="{{ (settings.exposure or 50) }}" placeholder="Enter exposure in ms">
+                        <label for="exposureInput">EXPOSURE TIME (ms):</label>
+                        <input type="number" id="exposureInput" min="10" max="5000" step="1" value="{{ (settings.exposure or 50) }}" placeholder="ENTER EXPOSURE IN ms">
                     </div>
                     
                     <div class="control-item">
                         <label for="isoInput">ISO:</label>
-                        <input type="number" id="isoInput" min="100" max="6400" step="50" value="{{ settings.iso or 100 }}" placeholder="Enter ISO value">
+                        <input type="number" id="isoInput" min="100" max="6400" step="50" value="{{ settings.iso or 100 }}" placeholder="ENTER ISO VALUE">
                     </div>
                     
-                    <button id="updateSettingsBtn" class="button">Update Settings</button>
+                    <button id="updateSettingsBtn" class="button">UPDATE SETTINGS</button>
                 </div>
             </div>
         </div>
         
         <div class="navigation">
-            <p><a href="{{ url_for('home') }}">← Back to Home</a></p>
+            <p><a href="{{ url_for('home') }}">← BACK TO HOME</a></p>
         </div>
     </div>
     
@@ -481,7 +481,7 @@
         async function captureImage() {
             const btn = document.getElementById('captureBtn');
             const originalText = btn.textContent;
-            btn.textContent = 'Capturing...';
+            btn.textContent = 'CAPTURING...';
             btn.disabled = true;
             
             try {
@@ -537,7 +537,7 @@
                 const data = await response.json();
                 
                 document.getElementById('cameraStatus').textContent = 
-                    data.initialized ? 'Ready' : 'Not Ready';
+                    data.initialized ? 'READY' : 'NOT READY';
                 
                 if (data.settings) {
                     if (data.settings.width && data.settings.height) {
@@ -550,14 +550,14 @@
                 }
             } catch (error) {
                 console.error('Error fetching camera status:', error);
-                document.getElementById('cameraStatus').textContent = 'Unknown';
+                document.getElementById('cameraStatus').textContent = 'UNKNOWN';
             }
         }
         
         async function saveCurrentImage() {
             const btn = document.getElementById('saveImageBtn');
             const originalText = btn.textContent;
-            btn.textContent = 'Saving...';
+            btn.textContent = 'SAVING...';
             btn.disabled = true;
             
             try {
@@ -586,7 +586,7 @@
         async function updateCameraSettings() {
             const btn = document.getElementById('updateSettingsBtn');
             const originalText = btn.textContent;
-            btn.textContent = 'Updating...';
+            btn.textContent = 'UPDATING...';
             btn.disabled = true;
             
             try {
