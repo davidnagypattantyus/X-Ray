@@ -25,7 +25,7 @@
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
         h1 {
-            color: #ffffff;
+            color: #ffb000;
             text-align: center;
             margin-bottom: 32px;
             font-weight: 700;
@@ -82,7 +82,7 @@
         }
         .control-group h3 {
             margin-bottom: 16px;
-            color: #ffffff;
+            color: #ffb000;
             font-weight: 700;
             font-size: 16px;
             letter-spacing: -0.01em;
@@ -152,19 +152,19 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
         }
         .button.capture {
-            background-color: #555555;
+            background-color: #666666;
             font-size: 15px;
             padding: 16px 24px;
             font-weight: 700;
         }
         .button.capture:hover {
-            background-color: #666666;
+            background-color: #777777;
         }
         .button.save {
-            background-color: #808080;
+            background-color: #666666;
         }
         .button.save:hover {
-            background-color: #8a8a8a;
+            background-color: #777777;
         }
         .status-panel {
             background-color: #404040;
@@ -255,6 +255,37 @@
             left: auto;
         }
         
+        .crosshair {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        
+        .crosshair-horizontal {
+            position: absolute;
+            width: 20px; /* Same as tick mark length */
+            height: 1.5px; /* Same as tick mark thickness */
+            background-color: #ffb000; /* Same amber color */
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 5;
+        }
+        
+        .crosshair-vertical {
+            position: absolute;
+            width: 1.5px; /* Same as tick mark thickness */
+            height: 20px; /* Same as tick mark length */
+            background-color: #ffb000; /* Same amber color */
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 5;
+        }
+        
         .axis-labels {
             position: absolute;
             top: 0;
@@ -323,11 +354,30 @@
             text-decoration: underline;
         }
         .capture-section {
-            background-color: #404040;
-            padding: 20px;
-            border-radius: 12px;
+            background-color: transparent;
+            padding: 0;
+            border-radius: 0;
             margin-bottom: 20px;
-            border: 1px solid #555555;
+            border: none;
+        }
+        
+        /* Amber headings */
+        h1,
+        .status-panel h3,
+        .capture-section h3,
+        .control-group h3 {
+            color: #ffb000 !important;
+        }
+        
+        /* Consistent font size for all section headings */
+        .status-panel h3,
+        .capture-section h3,
+        .control-group h3 {
+            font-size: 16px !important;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+            text-transform: uppercase;
+            margin-bottom: 16px;
         }
     </style>
 </head>
@@ -346,6 +396,12 @@
                         <p>CLICK "TAKE EXPOSURE" TO CAPTURE AN IMAGE</p>
                     </div>
                     <div class="coordinate-overlay" id="coordinateOverlay" style="display: none;">
+                        <!-- Crosshair -->
+                        <div class="crosshair">
+                            <div class="crosshair-horizontal"></div>
+                            <div class="crosshair-vertical"></div>
+                        </div>
+                        
                         <!-- Grid lines -->
                         <div class="grid-lines">
                             <!-- Vertical tick marks on bottom edge (9 equal divisions, no corner tick) -->
