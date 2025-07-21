@@ -5,7 +5,9 @@ flask>=2.3.0
 werkzeug==3.0.1
 requests==2.31.0
 numpy>=2.0.0
-pillow>=10.0.0
+opencv-python>=4.8.0
+scikit-image>=0.21.0
+matplotlib>=3.7.0
 
 # Note: PySpin is manually installed from wheel file
 # See README.md Section 4 for PySpin installation instructions

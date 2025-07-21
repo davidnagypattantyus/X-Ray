@@ -1,6 +1,6 @@
 import PySpin
 import numpy as np
-from PIL import Image
+import cv2
 import threading
 import time
 import os
@@ -135,20 +135,20 @@ class FlirLiveCamera:
                     image_data = ((image_data - image_data.min()) / 
                                 (image_data.max() - image_data.min()) * 255).astype(np.uint8)
                 
-                # Convert to PIL Image
+                # Convert to RGB using OpenCV
                 if len(image_data.shape) == 2:
-                    # Grayscale image
-                    pil_image = Image.fromarray(image_data, mode='L')
-                    # Convert to RGB for web display
-                    pil_image = pil_image.convert('RGB')
+                    # Grayscale image - convert to RGB for web display
+                    rgb_image = cv2.cvtColor(image_data, cv2.COLOR_GRAY2RGB)
                 else:
                     # Color image
-                    pil_image = Image.fromarray(image_data)
+                    rgb_image = image_data
                 
-                # Encode as JPEG for web display
-                img_buffer = io.BytesIO()
-                pil_image.save(img_buffer, format='JPEG', quality=85)
-                img_base64 = base64.b64encode(img_buffer.getvalue()).decode('utf-8')
+                # Encode as JPEG for web display using OpenCV
+                success, img_encoded = cv2.imencode('.jpg', rgb_image, [cv2.IMWRITE_JPEG_QUALITY, 85])
+                if success:
+                    img_base64 = base64.b64encode(img_encoded.tobytes()).decode('utf-8')
+                else:
+                    img_base64 = None
                 
                 # Store the latest image
                 with self.lock:
@@ -200,13 +200,8 @@ class FlirLiveCamera:
                 filename = f"flir_capture_{timestamp}.jpg"
                 filepath = os.path.join(save_path, filename)
                 
-                # Convert to PIL and save as JPEG
-                if len(self.latest_image_data.shape) == 2:
-                    pil_image = Image.fromarray(self.latest_image_data, mode='L')
-                else:
-                    pil_image = Image.fromarray(self.latest_image_data)
-                
-                pil_image.save(filepath, 'JPEG', quality=95)
+                # Save as JPEG using OpenCV
+                cv2.imwrite(filepath, self.latest_image_data, [cv2.IMWRITE_JPEG_QUALITY, 95])
                 
                 return filename
             except Exception as e:
