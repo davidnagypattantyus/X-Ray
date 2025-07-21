@@ -1,3 +1,6 @@
+# docker compose up --build -d dashboard
+# xraypi:8080
+
 from flask import Flask, render_template, jsonify, request, redirect, url_for, flash
 import os
 import redis
@@ -7,6 +10,7 @@ from dotenv import load_dotenv
 from influxdb_client import InfluxDBClient, Point
 from influxdb_client.client.write_api import SYNCHRONOUS
 import logging
+from flir import FlirCamera
 
 # Load environment variables
 load_dotenv('/app/config.env')
@@ -17,6 +21,14 @@ logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 app.secret_key = os.getenv('FLASK_SECRET_KEY', 'dev-secret-key-change-in-production')
+
+# Initialize camera
+camera = None
+try:
+    camera = FlirCamera()
+    logger.info("Camera initialized successfully")
+except Exception as e:
+    logger.error(f"Failed to initialize camera: {e}")
 
 # Database connections
 redis_client = None
@@ -62,8 +74,23 @@ def get_influx_connection():
 
 @app.route('/')
 def home():
-    """Dashboard home page"""
+    """Services landing page - default page"""
+    return render_template('landing.html')
+
+@app.route('/dashboard')
+def dashboard():
+    """Original dashboard page"""
     return render_template('index.html')
+
+@app.route('/landing')
+def landing():
+    """Services landing page (alias for root)"""
+    return render_template('landing.html')
+
+@app.route('/xray-image')
+def xray_image():
+    """X-Ray image display page"""
+    return render_template('xray_image.html')
 
 @app.route('/redis')
 def redis_demo():
@@ -217,6 +244,66 @@ def influxdb_write():
         flash(f'Error writing to InfluxDB: {e}', 'error')
     
     return redirect(url_for('influxdb_demo'))
+
+@app.route('/camera')
+def camera_control():
+    """Camera control page"""
+    if not camera:
+        flash('Camera not available', 'error')
+        return redirect(url_for('home'))
+    
+    settings = camera.get_current_settings() if camera else None
+    return render_template('camera_control.html', settings=settings)
+
+@app.route('/camera/settings', methods=['POST'])
+def update_camera_settings():
+    """Update camera settings"""
+    if not camera:
+        return jsonify({'error': 'Camera not available'}), 503
+    
+    try:
+        # Update gain
+        if 'gain' in request.form:
+            camera.set_gain(request.form['gain'])
+        
+        # Update exposure
+        if 'exposure_time' in request.form:
+            camera.set_exposure_time(request.form['exposure_time'])
+        
+        # Update ROI
+        if all(k in request.form for k in ['width', 'height']):
+            camera.set_roi(
+                width=request.form['width'],
+                height=request.form['height'],
+                offset_x=request.form.get('offset_x', 0),
+                offset_y=request.form.get('offset_y', 0)
+            )
+        
+        # Get updated settings
+        settings = camera.get_current_settings()
+        flash('Camera settings updated successfully', 'success')
+        return jsonify(settings)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 400
+
+@app.route('/camera/capture', methods=['POST'])
+def capture_image():
+    """Capture an image from the camera"""
+    if not camera:
+        return jsonify({'error': 'Camera not available'}), 503
+    
+    try:
+        filename = camera.capture_image()
+        if filename:
+            return jsonify({
+                'success': True,
+                'filename': filename,
+                'url': url_for('static', filename=f'captures/{filename}')
+            })
+        else:
+            return jsonify({'error': 'Failed to capture image'}), 400
+    except Exception as e:
+        return jsonify({'error': str(e)}), 400
 
 @app.route('/health')
 def health():

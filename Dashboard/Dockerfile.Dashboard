@@ -1,11 +1,51 @@
-FROM python:3.11-slim
+FROM python:3.10-slim
 
 WORKDIR /app
 
-# Copy requirements from root
-COPY requirements.txt .
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    libusb-1.0-0 \
+    libusb-1.0-0-dev \
+    expect \
+    debconf-utils \
+    && rm -rf /var/lib/apt/lists/*
 
-# Install dependencies
+# Create USB group for camera access
+RUN groupadd -g 991 usb && \
+    usermod -a -G usb root
+
+# Copy requirements and Spinnaker packages
+COPY requirements.txt .
+COPY Dashboard/spinnaker-4.2.0.88-arm64-22.04-pkg.tar /tmp/spinnaker-pkg.tar
+COPY Dashboard/spinnaker_python-4.2.0.88-cp310-cp310-linux_aarch64.tar /tmp/spinnaker-python.tar
+
+# Install Spinnaker system package first with automatic license acceptance
+ENV DEBIAN_FRONTEND=noninteractive
+RUN cd /tmp && \
+    tar xf spinnaker-pkg.tar && \
+    cd spinnaker-4.2.0.88-arm64 && \
+    apt-get update && \
+    expect -c "spawn dpkg -i ./libgentl_*.deb; expect \"Do you accept the EULA license terms?\"; send \"yes\r\"; interact" || \
+    (echo "libgentl libgentl/eula_accept boolean true" | debconf-set-selections && \
+     echo "libgentl libgentl/eula_accept seen true" | debconf-set-selections && \
+     DEBIAN_FRONTEND=noninteractive dpkg -i --force-confnew ./libgentl_*.deb) && \
+    apt-get install -f -y && \
+    apt-get install -y ./libspinnaker_*.deb && \
+    apt-get install -y ./libspinnaker-c_*.deb && \
+    apt-get install -y ./libspinnaker-dev_*.deb && \
+    apt-get install -y ./libspinnaker-c-dev_*.deb && \
+    apt-get install -y ./libspinvideo_*.deb && \
+    cd .. && \
+    rm -rf spinnaker-4.2.0.88-arm64 spinnaker-pkg.tar && \
+    rm -rf /var/lib/apt/lists/*
+
+# Install Spinnaker Python package
+RUN cd /tmp && \
+    tar xf spinnaker-python.tar && \
+    pip install spinnaker_python-4.2.0.88-cp310-cp310-linux_aarch64.whl && \
+    rm -rf spinnaker-python.tar spinnaker_python*.whl
+
+# Install Python dependencies
 RUN pip install -r requirements.txt
 
 # Copy dashboard application

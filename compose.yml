@@ -9,6 +9,11 @@ services:
     container_name: dashboard
     volumes:
       - ./config.env:/app/config.env
+      - /dev/bus/usb:/dev/bus/usb
+    devices:
+      - /dev/bus/usb:/dev/bus/usb
+    group_add:
+      - "${DOCKER_GROUP_ID:-991}"
     ports:
       - "8080:80"
     environment:

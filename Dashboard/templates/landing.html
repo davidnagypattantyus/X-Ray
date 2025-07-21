@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>X-Ray Services Hub</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            overflow-x: auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 300;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            width: 100%;
+            padding: 0 20px;
+            margin-bottom: 50px;
+        }
+
+        .service-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 40px 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            min-height: 220px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .service-card:hover {
+            transform: translateY(-10px);
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .service-card:hover::before {
+            left: 100%;
+        }
+
+        .service-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .service-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .service-description {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            line-height: 1.4;
+        }
+
+        .service-port {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-indicator {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #00ff88;
+            box-shadow: 0 0 10px #00ff88;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .footer {
+            text-align: center;
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .services-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                gap: 20px;
+            }
+            
+            .service-card {
+                padding: 30px 15px;
+                min-height: 180px;
+            }
+            
+            .service-icon {
+                font-size: 3rem;
+            }
+            
+            .service-title {
+                font-size: 1.2rem;
+            }
+        }
+
+        /* Special styling for different services */
+        .service-card.xray { background: rgba(138, 43, 226, 0.2); }
+        .service-card.grafana { background: rgba(255, 152, 0, 0.2); }
+        .service-card.influxdb { background: rgba(34, 193, 195, 0.2); }
+        .service-card.portainer { background: rgba(19, 62, 124, 0.2); }
+        .service-card.redis { background: rgba(220, 20, 60, 0.2); }
+        .service-card.ui { background: rgba(50, 205, 50, 0.2); }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🔬 X-Ray Services Hub</h1>
+        <p>Welcome to the X-Ray Data Acquisition System</p>
+    </div>
+
+    <div class="services-grid">
+        <!-- X-Ray Dashboard -->
+        <a href="{{ url_for('dashboard') }}" class="service-card xray">
+            <div class="status-indicator"></div>
+            <div class="service-port">:80</div>
+            <div class="service-icon">🔬</div>
+            <div class="service-title">X-Ray Dashboard</div>
+            <div class="service-description">Main dashboard with X-ray imaging, Redis & InfluxDB demos</div>
+        </a>
+
+        <!-- Grafana -->
+        <a href="http://localhost:3000" class="service-card grafana" target="_blank">
+            <div class="status-indicator"></div>
+            <div class="service-port">:3000</div>
+            <div class="service-icon">📊</div>
+            <div class="service-title">Grafana</div>
+            <div class="service-description">Data visualization and analytics platform (admin/admin)</div>
+        </a>
+
+        <!-- InfluxDB -->
+        <a href="http://localhost:8086" class="service-card influxdb" target="_blank">
+            <div class="status-indicator"></div>
+            <div class="service-port">:8086</div>
+            <div class="service-icon">🗃️</div>
+            <div class="service-title">InfluxDB</div>
+            <div class="service-description">Time-series database for sensor data storage</div>
+        </a>
+
+
+
+        <!-- Redis -->
+        <a href="{{ url_for('redis_demo') }}" class="service-card redis">
+            <div class="status-indicator"></div>
+            <div class="service-port">:6379</div>
+            <div class="service-icon">🔄</div>
+            <div class="service-title">Redis</div>
+            <div class="service-description">In-memory data store and message broker</div>
+        </a>
+
+        <!-- UI Interface -->
+        <a href="http://localhost:8081" class="service-card ui" target="_blank">
+            <div class="status-indicator"></div>
+            <div class="service-port">:8081</div>
+            <div class="service-icon">🖥️</div>
+            <div class="service-title">NiceGUI Interface</div>
+            <div class="service-description">Modern web interface with real-time updates</div>
+        </a>
+    </div>
+
+    <div class="footer">
+        <p>X-Ray DAQ System v2.0 • All services running in Docker containers</p>
+    </div>
+
+    <script>
+        // Simple health check animation
+        document.addEventListener('DOMContentLoaded', function() {
+            const indicators = document.querySelectorAll('.status-indicator');
+            
+            // Randomly offset the pulse animations
+            indicators.forEach((indicator, index) => {
+                indicator.style.animationDelay = `${index * 0.3}s`;
+            });
+
+            // Add click event tracking
+            document.querySelectorAll('.service-card').forEach(card => {
+                card.addEventListener('click', function(e) {
+                    const title = this.querySelector('.service-title').textContent;
+                    console.log(`Navigating to ${title}`);
+                    
+                    // Optional: Add loading state
+                    this.style.opacity = '0.7';
+                    setTimeout(() => {
+                        this.style.opacity = '1';
+                    }, 500);
+                });
+            });
+        });
+    </script>
+</body>
+</html> 
