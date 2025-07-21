@@ -3,88 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>X-Ray Dashboard</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #f0f0f0;
-        }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-            color: #333;
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        .primary-action {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        .xray-button {
-            display: inline-block;
-            padding: 20px 40px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            text-decoration: none;
-            border-radius: 8px;
-            font-size: 18px;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        .xray-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
-            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
-        }
-        .nav-links {
-            list-style: none;
-            padding: 0;
-        }
-        .nav-links li {
-            margin: 10px 0;
-        }
-        .nav-links a {
-            display: block;
-            padding: 15px;
-            background-color: #f8f9fa;
-            color: #0066cc;
-            text-decoration: none;
-            border-radius: 4px;
-            transition: background-color 0.2s;
-        }
-        .nav-links a:hover {
-            background-color: #e9ecef;
-        }
-        .section-title {
-            color: #666;
-            font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 15px;
-            text-align: center;
-        }
-    </style>
+    <title>X-Ray Camera Dashboard</title>
+    <script>
+        // Automatically redirect to live camera view
+        window.location.href = "{{ url_for('live_camera_page') }}";
+    </script>
 </head>
 <body>
-    <div class="container">
-        <h1>X-Ray Dashboard</h1>
-        <ul class="nav-links">
-            <li><a href="{{ url_for('live_camera_page') }}">🔴 Live FLIR Camera</a></li>
-            <li><a href="{{ url_for('xray_image') }}">View X-Ray Image</a></li>
-            <li><a href="{{ url_for('redis_demo') }}">Redis Demo</a></li>
-            <li><a href="{{ url_for('influxdb_demo') }}">InfluxDB Demo</a></li>
-        </ul>
+    <div style="text-align: center; padding: 50px; font-family: Arial, sans-serif;">
+        <h1>📸 Redirecting to Camera Dashboard...</h1>
+        <p>If you are not redirected automatically, <a href="{{ url_for('live_camera_page') }}">click here</a>.</p>
     </div>
 </body>
 </html> 

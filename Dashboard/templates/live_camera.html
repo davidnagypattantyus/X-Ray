@@ -31,25 +31,29 @@
             margin-bottom: 20px;
         }
         .image-display {
-            background-color: #000;
+            background-color: #f5f5f5;
             border-radius: 8px;
-            padding: 20px;
+            padding: 0;
             text-align: center;
-            min-height: 400px;
+            width: 100%;
+            aspect-ratio: 1 / 1;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            overflow: hidden;
+            position: relative;
         }
         .camera-image {
-            max-width: 100%;
-            max-height: 500px;
-            border-radius: 4px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 8px;
         }
         .image-placeholder {
-            color: #ccc;
+            color: #666;
             font-size: 18px;
+            padding: 20px;
         }
         .controls-panel {
             background-color: #f8f9fa;
@@ -78,9 +82,20 @@
             border: 1px solid #ddd;
             border-radius: 4px;
             box-sizing: border-box;
+            margin-bottom: 8px;
         }
         input[type="range"] {
             height: 40px;
+            margin-bottom: 5px;
+        }
+        input[type="number"] {
+            background-color: #f8f9fa;
+            font-size: 14px;
+        }
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
         }
         .range-value {
             text-align: center;
@@ -138,10 +153,16 @@
             color: #666;
         }
         .timestamp {
-            text-align: center;
-            color: #999;
-            font-size: 14px;
-            margin-top: 10px;
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            z-index: 10;
         }
         .message {
             padding: 10px;
@@ -226,15 +247,17 @@
                     <h3>⚙️ Camera Settings</h3>
                     
                     <div class="control-item">
-                        <label for="exposureSlider">Exposure Time (μs):</label>
-                        <input type="range" id="exposureSlider" min="1000" max="200000" step="1000" value="{{ settings.exposure or 50000 }}">
-                        <div id="exposureValue" class="range-value">{{ settings.exposure or 50000 }} μs</div>
+                        <label for="exposureSlider">Exposure Time (ms):</label>
+                        <input type="range" id="exposureSlider" min="10" max="5000" step="10" value="{{ (settings.exposure or 50) }}">
+                        <div id="exposureValue" class="range-value">{{ (settings.exposure or 50) }} ms</div>
+                        <input type="number" id="exposureInput" min="10" max="5000" step="1" value="{{ (settings.exposure or 50) }}" placeholder="Enter exposure in ms">
                     </div>
                     
                     <div class="control-item">
                         <label for="isoSlider">ISO:</label>
                         <input type="range" id="isoSlider" min="100" max="6400" step="100" value="{{ settings.iso or 100 }}">
                         <div id="isoValue" class="range-value">ISO {{ settings.iso or 100 }}</div>
+                        <input type="number" id="isoInput" min="100" max="6400" step="50" value="{{ settings.iso or 100 }}" placeholder="Enter ISO value">
                     </div>
                     
                     <button id="updateSettingsBtn" class="button">🔧 Update Settings</button>
@@ -260,13 +283,30 @@
             document.getElementById('saveImageBtn').addEventListener('click', saveCurrentImage);
             document.getElementById('updateSettingsBtn').addEventListener('click', updateCameraSettings);
             
-            // Update slider value displays
+            // Update slider value displays and sync with input boxes
             document.getElementById('exposureSlider').addEventListener('input', function() {
-                document.getElementById('exposureValue').textContent = this.value + ' μs';
+                document.getElementById('exposureValue').textContent = this.value + ' ms';
+                document.getElementById('exposureInput').value = this.value;
             });
             
             document.getElementById('isoSlider').addEventListener('input', function() {
                 document.getElementById('isoValue').textContent = 'ISO ' + this.value;
+                document.getElementById('isoInput').value = this.value;
+            });
+            
+            // Update sliders when input boxes change
+            document.getElementById('exposureInput').addEventListener('input', function() {
+                const value = Math.max(10, Math.min(5000, parseInt(this.value) || 50));
+                this.value = value;
+                document.getElementById('exposureSlider').value = value;
+                document.getElementById('exposureValue').textContent = value + ' ms';
+            });
+            
+            document.getElementById('isoInput').addEventListener('input', function() {
+                const value = Math.max(100, Math.min(6400, parseInt(this.value) || 100));
+                this.value = value;
+                document.getElementById('isoSlider').value = value;
+                document.getElementById('isoValue').textContent = 'ISO ' + value;
             });
         });
         
@@ -384,8 +424,9 @@
             btn.disabled = true;
             
             try {
-                const exposure = document.getElementById('exposureSlider').value;
-                const iso = document.getElementById('isoSlider').value;
+                // Use input box values (which are synchronized with sliders)
+                const exposure = parseFloat(document.getElementById('exposureInput').value);
+                const iso = parseInt(document.getElementById('isoInput').value);
                 
                 const response = await fetch('/api/camera/settings', {
                     method: 'POST',
@@ -393,8 +434,8 @@
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        exposure: parseFloat(exposure),
-                        iso: parseInt(iso)
+                        exposure: exposure,
+                        iso: iso
                     })
                 });
                 

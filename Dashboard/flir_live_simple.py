@@ -57,25 +57,36 @@ class FlirLiveCamera:
             if self.cam.AcquisitionMode.GetAccessMode() == PySpin.RW:
                 self.cam.AcquisitionMode.SetValue(PySpin.AcquisitionMode_SingleFrame)
             
-            # Set a reasonable resolution for captures
+            # Set resolution to full vertical with 1:1 aspect ratio
             if self.cam.Width.GetAccessMode() == PySpin.RW and self.cam.Height.GetAccessMode() == PySpin.RW:
-                # Use full resolution for single shots
-                max_width = self.cam.Width.GetMax()
+                # Get maximum height (full vertical resolution)
                 max_height = self.cam.Height.GetMax()
+                
+                # Set width equal to height for 1:1 aspect ratio
+                target_width = max_height
                 
                 # Ensure proper alignment
                 width_inc = self.cam.Width.GetInc()
                 height_inc = self.cam.Height.GetInc()
-                width = (max_width // width_inc) * width_inc
+                
+                # Align dimensions to camera requirements
+                width = (target_width // width_inc) * width_inc
                 height = (max_height // height_inc) * height_inc
+                
+                # Make sure width doesn't exceed maximum width
+                max_width = self.cam.Width.GetMax()
+                if width > max_width:
+                    width = (max_width // width_inc) * width_inc
+                    # Adjust height to maintain 1:1 ratio if needed
+                    height = (width // height_inc) * height_inc
                 
                 self.cam.Width.SetValue(width)
                 self.cam.Height.SetValue(height)
-                print(f"Set capture resolution: {width} x {height}")
+                print(f"Set capture resolution (1:1 aspect ratio): {width} x {height}")
             
             # Set default exposure time
             if self.cam.ExposureTime.GetAccessMode() == PySpin.RW:
-                self.cam.ExposureTime.SetValue(50000)  # 50ms default
+                self.cam.ExposureTime.SetValue(50000)  # 50ms default (50000 microseconds)
             
             # Set default gain (ISO 100 equivalent)
             if self.cam.Gain.GetAccessMode() == PySpin.RW:
@@ -202,9 +213,11 @@ class FlirLiveCamera:
                 print(f"Error saving image: {e}")
                 return None
     
-    def set_exposure(self, exposure_us):
-        """Set exposure time in microseconds"""
+    def set_exposure(self, exposure_ms):
+        """Set exposure time in milliseconds"""
         try:
+            # Convert ms to microseconds for camera
+            exposure_us = exposure_ms * 1000
             if self.cam.ExposureTime.GetAccessMode() == PySpin.RW:
                 self.cam.ExposureTime.SetValue(float(exposure_us))
                 return True
@@ -242,7 +255,9 @@ class FlirLiveCamera:
                 settings['gain'] = gain_db
                 settings['iso'] = self.gain_to_iso(gain_db)
             if self.cam.ExposureTime.GetAccessMode() == PySpin.RW:
-                settings['exposure'] = self.cam.ExposureTime.GetValue()
+                # Convert microseconds to milliseconds for display
+                exposure_us = self.cam.ExposureTime.GetValue()
+                settings['exposure'] = exposure_us / 1000
             if self.cam.Width.GetAccessMode() == PySpin.RW:
                 settings['width'] = self.cam.Width.GetValue()
             if self.cam.Height.GetAccessMode() == PySpin.RW:
