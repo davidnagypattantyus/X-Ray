@@ -14,10 +14,9 @@ class FlirLiveCamera:
         self.system = None
         self.cam = None
         self.nodemap = None
-        self.is_streaming = False
+        self.is_initialized = False
         self.latest_image = None
         self.latest_image_data = None
-        self.capture_thread = None
         self.lock = threading.Lock()
         self._initialize_camera()
     
@@ -42,135 +41,141 @@ class FlirLiveCamera:
             self.cam.Init()
             self.nodemap = self.cam.GetNodeMap()
             
-            # Configure camera for optimal performance
+            # Configure camera for single shot capture
             self._configure_camera()
             
-            print("Camera initialized successfully")
+            self.is_initialized = True
+            print("Camera initialized successfully for manual exposures")
         except Exception as e:
             print(f"Error initializing camera: {e}")
             raise
     
     def _configure_camera(self):
-        """Configure camera settings for live streaming"""
+        """Configure camera settings for single shot capture"""
         try:
-            # Set acquisition mode to continuous
+            # Set acquisition mode to single frame
             if self.cam.AcquisitionMode.GetAccessMode() == PySpin.RW:
-                self.cam.AcquisitionMode.SetValue(PySpin.AcquisitionMode_Continuous)
+                self.cam.AcquisitionMode.SetValue(PySpin.AcquisitionMode_SingleFrame)
             
-            # Set a reasonable resolution for live streaming
+            # Set a reasonable resolution for captures
             if self.cam.Width.GetAccessMode() == PySpin.RW and self.cam.Height.GetAccessMode() == PySpin.RW:
-                # Set to 1/4 resolution for faster streaming
+                # Use full resolution for single shots
                 max_width = self.cam.Width.GetMax()
                 max_height = self.cam.Height.GetMax()
-                
-                new_width = max_width // 4
-                new_height = max_height // 4
                 
                 # Ensure proper alignment
                 width_inc = self.cam.Width.GetInc()
                 height_inc = self.cam.Height.GetInc()
-                new_width = (new_width // width_inc) * width_inc
-                new_height = (new_height // height_inc) * height_inc
+                width = (max_width // width_inc) * width_inc
+                height = (max_height // height_inc) * height_inc
                 
-                self.cam.Width.SetValue(new_width)
-                self.cam.Height.SetValue(new_height)
-                print(f"Set streaming resolution: {new_width} x {new_height}")
+                self.cam.Width.SetValue(width)
+                self.cam.Height.SetValue(height)
+                print(f"Set capture resolution: {width} x {height}")
             
-            # Set exposure time for reasonable frame rate
+            # Set default exposure time
             if self.cam.ExposureTime.GetAccessMode() == PySpin.RW:
-                self.cam.ExposureTime.SetValue(20000)  # 20ms
+                self.cam.ExposureTime.SetValue(50000)  # 50ms default
             
-            # Set gain
+            # Set default gain (ISO 100 equivalent)
             if self.cam.Gain.GetAccessMode() == PySpin.RW:
-                self.cam.Gain.SetValue(1.0)
+                self.cam.Gain.SetValue(0.0)  # Start with minimum gain
             
         except PySpin.SpinnakerException as e:
             print(f"Warning: Could not configure camera: {e}")
     
-    def start_streaming(self):
-        """Start continuous image capture"""
-        if self.is_streaming:
-            return
+    def iso_to_gain(self, iso_value):
+        """Convert ISO value to camera gain"""
+        # ISO to gain conversion (approximate)
+        # ISO 100 = 0dB, each doubling of ISO adds ~6dB of gain
+        # This is camera-specific, but this gives a reasonable approximation
+        iso_base = 100
+        if iso_value < iso_base:
+            iso_value = iso_base
+        
+        gain_db = 20 * np.log10(iso_value / iso_base)
+        return max(0.0, min(20.0, gain_db))  # Clamp between 0-20dB
+    
+    def gain_to_iso(self, gain_db):
+        """Convert camera gain to approximate ISO value"""
+        iso_base = 100
+        iso_value = iso_base * (10 ** (gain_db / 20))
+        return int(round(iso_value))
+    
+    def capture_single_image(self):
+        """Capture a single image manually"""
+        if not self.is_initialized:
+            return False
         
         try:
+            # Begin acquisition for single frame
             self.cam.BeginAcquisition()
-            self.is_streaming = True
             
-            # Start capture thread
-            self.capture_thread = threading.Thread(target=self._capture_loop, daemon=True)
-            self.capture_thread.start()
+            # Capture image with timeout
+            image_result = self.cam.GetNextImage(5000)  # 5 second timeout
             
-            print("Live streaming started")
-        except Exception as e:
-            print(f"Error starting streaming: {e}")
-    
-    def stop_streaming(self):
-        """Stop continuous image capture"""
-        if not self.is_streaming:
-            return
-        
-        self.is_streaming = False
-        
-        try:
-            if self.cam and self.cam.IsStreaming():
-                self.cam.EndAcquisition()
-            print("Live streaming stopped")
-        except Exception as e:
-            print(f"Error stopping streaming: {e}")
-    
-    def _capture_loop(self):
-        """Main capture loop that runs every 5 seconds"""
-        while self.is_streaming:
+            if not image_result.IsIncomplete():
+                # Convert to numpy array
+                image_data = image_result.GetNDArray()
+                
+                # Convert to 8-bit if needed
+                if image_data.dtype != np.uint8:
+                    # Normalize to 8-bit
+                    image_data = ((image_data - image_data.min()) / 
+                                (image_data.max() - image_data.min()) * 255).astype(np.uint8)
+                
+                # Convert to PIL Image
+                if len(image_data.shape) == 2:
+                    # Grayscale image
+                    pil_image = Image.fromarray(image_data, mode='L')
+                    # Convert to RGB for web display
+                    pil_image = pil_image.convert('RGB')
+                else:
+                    # Color image
+                    pil_image = Image.fromarray(image_data)
+                
+                # Encode as JPEG for web display
+                img_buffer = io.BytesIO()
+                pil_image.save(img_buffer, format='JPEG', quality=85)
+                img_base64 = base64.b64encode(img_buffer.getvalue()).decode('utf-8')
+                
+                # Store the latest image
+                with self.lock:
+                    self.latest_image = img_base64
+                    self.latest_image_data = image_data.copy()
+                
+                success = True
+            else:
+                print(f"Image incomplete: {image_result.GetImageStatus()}")
+                success = False
+            
+            # Release image and end acquisition
+            image_result.Release()
+            self.cam.EndAcquisition()
+            
+            return success
+            
+        except PySpin.SpinnakerException as e:
+            print(f"Capture error: {e}")
             try:
-                # Capture image
-                image_result = self.cam.GetNextImage(1000)
-                
-                if not image_result.IsIncomplete():
-                    # Convert to numpy array
-                    image_data = image_result.GetNDArray()
-                    
-                    # Convert to 8-bit if needed
-                    if image_data.dtype != np.uint8:
-                        # Normalize to 8-bit
-                        image_data = ((image_data - image_data.min()) / 
-                                    (image_data.max() - image_data.min()) * 255).astype(np.uint8)
-                    
-                    # Convert to PIL Image
-                    if len(image_data.shape) == 2:
-                        # Grayscale image
-                        pil_image = Image.fromarray(image_data, mode='L')
-                        # Convert to RGB for web display
-                        pil_image = pil_image.convert('RGB')
-                    else:
-                        # Color image
-                        pil_image = Image.fromarray(image_data)
-                    
-                    # Encode as JPEG for web display
-                    img_buffer = io.BytesIO()
-                    pil_image.save(img_buffer, format='JPEG', quality=85)
-                    img_base64 = base64.b64encode(img_buffer.getvalue()).decode('utf-8')
-                    
-                    # Store the latest image
-                    with self.lock:
-                        self.latest_image = img_base64
-                        self.latest_image_data = image_data.copy()
-                
-                image_result.Release()
-                
-                # Wait 5 seconds before next capture
-                time.sleep(5)
-                
-            except PySpin.SpinnakerException as e:
-                print(f"Capture error: {e}")
-                time.sleep(1)
-            except Exception as e:
-                print(f"Unexpected error in capture loop: {e}")
-                break
+                self.cam.EndAcquisition()
+            except:
+                pass
+            return False
+        except Exception as e:
+            print(f"Unexpected error during capture: {e}")
+            return False
     
     def get_latest_image(self):
         """Get the latest captured image as base64 string"""
         with self.lock:
             return self.latest_image
+    
+    def clear_image(self):
+        """Clear the current image"""
+        with self.lock:
+            self.latest_image = None
+            self.latest_image_data = None
     
     def save_current_image(self, save_path="/home/davidnagypattantyus/Desktop"):
         """Save the current image to desktop"""
@@ -207,8 +212,19 @@ class FlirLiveCamera:
             print(f"Error setting exposure: {e}")
         return False
     
+    def set_iso(self, iso_value):
+        """Set ISO value (converts to gain internally)"""
+        try:
+            gain_db = self.iso_to_gain(iso_value)
+            if self.cam.Gain.GetAccessMode() == PySpin.RW:
+                self.cam.Gain.SetValue(gain_db)
+                return True
+        except Exception as e:
+            print(f"Error setting ISO: {e}")
+        return False
+    
     def set_gain(self, gain_value):
-        """Set camera gain"""
+        """Set camera gain directly"""
         try:
             if self.cam.Gain.GetAccessMode() == PySpin.RW:
                 self.cam.Gain.SetValue(float(gain_value))
@@ -222,7 +238,9 @@ class FlirLiveCamera:
         try:
             settings = {}
             if self.cam.Gain.GetAccessMode() == PySpin.RW:
-                settings['gain'] = self.cam.Gain.GetValue()
+                gain_db = self.cam.Gain.GetValue()
+                settings['gain'] = gain_db
+                settings['iso'] = self.gain_to_iso(gain_db)
             if self.cam.ExposureTime.GetAccessMode() == PySpin.RW:
                 settings['exposure'] = self.cam.ExposureTime.GetValue()
             if self.cam.Width.GetAccessMode() == PySpin.RW:
@@ -236,9 +254,10 @@ class FlirLiveCamera:
     
     def __del__(self):
         """Cleanup camera resources"""
-        self.stop_streaming()
         try:
             if self.cam:
+                if self.cam.IsStreaming():
+                    self.cam.EndAcquisition()
                 self.cam.DeInit()
                 del self.cam
             if self.system:

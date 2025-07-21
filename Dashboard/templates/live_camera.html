@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Live FLIR Camera</title>
+    <title>FLIR Camera Control</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -105,6 +105,14 @@
             transform: translateY(-2px);
             box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
         }
+        .button.capture {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            font-size: 18px;
+            padding: 16px 24px;
+        }
+        .button.capture:hover {
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+        }
         .button.save {
             background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
         }
@@ -162,34 +170,27 @@
         .navigation a:hover {
             text-decoration: underline;
         }
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 2px solid #f3f3f3;
-            border-top: 2px solid #333;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .capture-section {
+            background-color: #fff3cd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 2px solid #ffeaa7;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🔴 Live FLIR Camera Feed</h1>
+        <h1>📸 FLIR Camera Control</h1>
         
         <div id="messageArea"></div>
         
         <div class="camera-section">
             <div class="image-display">
-                <img id="cameraImage" class="camera-image" style="display: none;" alt="Live camera feed">
+                <img id="cameraImage" class="camera-image" style="display: none;" alt="Camera capture">
                 <div id="imagePlaceholder" class="image-placeholder">
-                    <div class="loading"></div>
-                    <p>Waiting for camera feed...</p>
-                    <p>New image every 5 seconds</p>
+                    <p>📷 No image captured yet</p>
+                    <p>Click "Take Exposure" to capture an image</p>
                 </div>
                 <div id="imageTimestamp" class="timestamp"></div>
             </div>
@@ -198,21 +199,26 @@
                 <div class="status-panel">
                     <h3>📊 Camera Status</h3>
                     <div class="status-item">
-                        <span class="status-label">Streaming:</span>
-                        <span id="streamingStatus" class="status-value">Checking...</span>
+                        <span class="status-label">Initialized:</span>
+                        <span id="cameraStatus" class="status-value">Checking...</span>
                     </div>
                     <div class="status-item">
                         <span class="status-label">Resolution:</span>
                         <span id="resolutionStatus" class="status-value">-</span>
                     </div>
                     <div class="status-item">
-                        <span class="status-label">Last Update:</span>
-                        <span id="lastUpdate" class="status-value">-</span>
+                        <span class="status-label">Current ISO:</span>
+                        <span id="currentISO" class="status-value">-</span>
                     </div>
                 </div>
                 
+                <div class="capture-section">
+                    <h3>📸 Capture Control</h3>
+                    <button id="captureBtn" class="button capture">📷 Take Exposure</button>
+                </div>
+                
                 <div class="control-group">
-                    <h3>📸 Image Control</h3>
+                    <h3>💾 Image Control</h3>
                     <button id="saveImageBtn" class="button save">💾 Save Current Image</button>
                 </div>
                 
@@ -221,14 +227,14 @@
                     
                     <div class="control-item">
                         <label for="exposureSlider">Exposure Time (μs):</label>
-                        <input type="range" id="exposureSlider" min="1000" max="200000" step="1000" value="{{ settings.exposure or 20000 }}">
-                        <div id="exposureValue" class="range-value">{{ settings.exposure or 20000 }} μs</div>
+                        <input type="range" id="exposureSlider" min="1000" max="200000" step="1000" value="{{ settings.exposure or 50000 }}">
+                        <div id="exposureValue" class="range-value">{{ settings.exposure or 50000 }} μs</div>
                     </div>
                     
                     <div class="control-item">
-                        <label for="gainSlider">Gain:</label>
-                        <input type="range" id="gainSlider" min="0" max="20" step="0.1" value="{{ settings.gain or 1.0 }}">
-                        <div id="gainValue" class="range-value">{{ settings.gain or 1.0 }}</div>
+                        <label for="isoSlider">ISO:</label>
+                        <input type="range" id="isoSlider" min="100" max="6400" step="100" value="{{ settings.iso or 100 }}">
+                        <div id="isoValue" class="range-value">ISO {{ settings.iso or 100 }}</div>
                     </div>
                     
                     <button id="updateSettingsBtn" class="button">🔧 Update Settings</button>
@@ -242,15 +248,15 @@
     </div>
     
     <script>
-        let imageUpdateInterval;
         let statusUpdateInterval;
         
         // Initialize the page
         document.addEventListener('DOMContentLoaded', function() {
             updateCameraStatus();
-            startImageUpdates();
+            statusUpdateInterval = setInterval(updateCameraStatus, 10000);
             
             // Set up event listeners
+            document.getElementById('captureBtn').addEventListener('click', captureImage);
             document.getElementById('saveImageBtn').addEventListener('click', saveCurrentImage);
             document.getElementById('updateSettingsBtn').addEventListener('click', updateCameraSettings);
             
@@ -259,16 +265,40 @@
                 document.getElementById('exposureValue').textContent = this.value + ' μs';
             });
             
-            document.getElementById('gainSlider').addEventListener('input', function() {
-                document.getElementById('gainValue').textContent = this.value;
+            document.getElementById('isoSlider').addEventListener('input', function() {
+                document.getElementById('isoValue').textContent = 'ISO ' + this.value;
             });
         });
         
-        function startImageUpdates() {
-            // Update image immediately, then every 3 seconds (faster than capture rate)
-            updateCameraImage();
-            imageUpdateInterval = setInterval(updateCameraImage, 3000);
-            statusUpdateInterval = setInterval(updateCameraStatus, 10000);
+        async function captureImage() {
+            const btn = document.getElementById('captureBtn');
+            const originalText = btn.textContent;
+            btn.textContent = '📷 Capturing...';
+            btn.disabled = true;
+            
+            try {
+                const response = await fetch('/api/camera/capture', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showMessage('✅ Image captured successfully!', 'success');
+                    // Wait a moment then get the image
+                    setTimeout(updateCameraImage, 500);
+                } else {
+                    showMessage('❌ Failed to capture image: ' + data.error, 'error');
+                }
+            } catch (error) {
+                showMessage('❌ Error capturing image: ' + error.message, 'error');
+            } finally {
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }
         }
         
         async function updateCameraImage() {
@@ -286,15 +316,12 @@
                     placeholder.style.display = 'none';
                     
                     const updateTime = new Date(data.timestamp);
-                    timestamp.textContent = 'Last captured: ' + updateTime.toLocaleString();
-                    
-                    document.getElementById('lastUpdate').textContent = updateTime.toLocaleTimeString();
+                    timestamp.textContent = 'Captured: ' + updateTime.toLocaleString();
                 } else {
-                    console.log('No image available yet');
+                    console.log('No image available');
                 }
             } catch (error) {
                 console.error('Error fetching camera image:', error);
-                showMessage('Error fetching camera image', 'error');
             }
         }
         
@@ -303,18 +330,21 @@
                 const response = await fetch('/api/camera/status');
                 const data = await response.json();
                 
-                document.getElementById('streamingStatus').textContent = 
-                    data.streaming ? '🟢 Active' : '🔴 Inactive';
+                document.getElementById('cameraStatus').textContent = 
+                    data.initialized ? '🟢 Ready' : '🔴 Not Ready';
                 
                 if (data.settings) {
                     if (data.settings.width && data.settings.height) {
                         document.getElementById('resolutionStatus').textContent = 
                             `${data.settings.width} x ${data.settings.height}`;
                     }
+                    if (data.settings.iso) {
+                        document.getElementById('currentISO').textContent = `ISO ${data.settings.iso}`;
+                    }
                 }
             } catch (error) {
                 console.error('Error fetching camera status:', error);
-                document.getElementById('streamingStatus').textContent = '❓ Unknown';
+                document.getElementById('cameraStatus').textContent = '❓ Unknown';
             }
         }
         
@@ -355,7 +385,7 @@
             
             try {
                 const exposure = document.getElementById('exposureSlider').value;
-                const gain = document.getElementById('gainSlider').value;
+                const iso = document.getElementById('isoSlider').value;
                 
                 const response = await fetch('/api/camera/settings', {
                     method: 'POST',
@@ -364,7 +394,7 @@
                     },
                     body: JSON.stringify({
                         exposure: parseFloat(exposure),
-                        gain: parseFloat(gain)
+                        iso: parseInt(iso)
                     })
                 });
                 
@@ -400,7 +430,6 @@
         
         // Clean up intervals when page is unloaded
         window.addEventListener('beforeunload', function() {
-            if (imageUpdateInterval) clearInterval(imageUpdateInterval);
             if (statusUpdateInterval) clearInterval(statusUpdateInterval);
         });
     </script>

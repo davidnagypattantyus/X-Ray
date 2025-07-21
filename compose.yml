@@ -34,47 +34,47 @@ services:
       timeout: 10s
       retries: 3
   
-  camera-test:
-    build:
-      context: .
-      dockerfile: Dockerfile.camera
-    container_name: camera-test
-    privileged: true # This gives the container extended permissions to access host devices
-    volumes:
-      - /dev/bus/usb:/dev/bus/usb
-    restart: unless-stopped
-    networks:
-      - app-network
+  # camera-test:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile.camera
+  #   container_name: camera-test
+  #   privileged: true # This gives the container extended permissions to access host devices
+  #   volumes:
+  #     - /dev/bus/usb:/dev/bus/usb
+  #   restart: unless-stopped
+  #   networks:
+  #     - app-network
 
-  logger:
-    build:
-      context: .
-      dockerfile: Logger/Dockerfile.Logger
-    image: daq-logger:latest
-    container_name: logger
-    volumes:
-      - ./config.env:/app/config.env
-      - /var/run/docker.sock:/var/run/docker.sock
-    group_add:
-      - "${DOCKER_GROUP_ID:-991}"
-    environment:
-      - REDIS_HOST=redis
-      - INFLUXDB_HOST=influxdb
-      - INFLUXDB_PORT=8086
-      - INFLUXDB_ORG=DAQ
-      - INFLUXDB_BUCKET=logger
-      - INFLUXDB_TOKEN=8_qFm2VXj6ri_SVbdtzaVP7KiC1A45RMCCvEkLeGzwPUe8otW8N0bsjHoSHm6w3u3Jvg6vDcNJ193ris9VUa0w==
-    depends_on:
-      - redis
-      - influxdb
-    networks:
-      - app-network
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "python", "-c", "import redis; redis.Redis(host='redis').ping()"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+  # logger:
+  #   build:
+  #     context: .
+  #     dockerfile: Logger/Dockerfile.Logger
+  #   image: daq-logger:latest
+  #   container_name: logger
+  #   volumes:
+  #     - ./config.env:/app/config.env
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #   group_add:
+  #     - "${DOCKER_GROUP_ID:-991}"
+  #   environment:
+  #     - REDIS_HOST=redis
+  #     - INFLUXDB_HOST=influxdb
+  #     - INFLUXDB_PORT=8086
+  #     - INFLUXDB_ORG=DAQ
+  #     - INFLUXDB_BUCKET=logger
+  #     - INFLUXDB_TOKEN=8_qFm2VXj6ri_SVbdtzaVP7KiC1A45RMCCvEkLeGzwPUe8otW8N0bsjHoSHm6w3u3Jvg6vDcNJ193ris9VUa0w==
+  #   depends_on:
+  #     - redis
+  #     - influxdb
+  #   networks:
+  #     - app-network
+  #   restart: unless-stopped
+  #   healthcheck:
+  #     test: ["CMD", "python", "-c", "import redis; redis.Redis(host='redis').ping()"]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 3
 
   redis:
     image: redis:latest

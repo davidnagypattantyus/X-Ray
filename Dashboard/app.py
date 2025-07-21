@@ -35,10 +35,9 @@ live_camera = None
 if FLIR_AVAILABLE:
     try:
         live_camera = FlirLiveCamera()
-        live_camera.start_streaming()
-        logger.info("Live camera initialized and streaming started")
+        logger.info("Camera initialized successfully")
     except Exception as e:
-        logger.error(f"Failed to initialize live camera: {e}")
+        logger.error(f"Failed to initialize camera: {e}")
 else:
     logger.info("FLIR camera not available - running without camera support")
 
@@ -146,6 +145,25 @@ def save_camera_image():
     else:
         return jsonify({'error': 'Failed to save image'}), 400
 
+@app.route('/api/camera/capture', methods=['POST'])
+def capture_manual_image():
+    """API endpoint to manually capture an image"""
+    if not live_camera:
+        return jsonify({'error': 'Camera not available'}), 503
+    
+    try:
+        success = live_camera.capture_single_image()
+        if success:
+            return jsonify({
+                'success': True,
+                'message': 'Image captured successfully',
+                'timestamp': datetime.now().isoformat()
+            })
+        else:
+            return jsonify({'error': 'Failed to capture image'}), 400
+    except Exception as e:
+        return jsonify({'error': str(e)}), 400
+
 @app.route('/api/camera/settings', methods=['POST'])
 def update_camera_settings():
     """API endpoint to update camera settings"""
@@ -158,7 +176,9 @@ def update_camera_settings():
         if 'exposure' in data:
             live_camera.set_exposure(data['exposure'])
         
-        if 'gain' in data:
+        if 'iso' in data:
+            live_camera.set_iso(data['iso'])
+        elif 'gain' in data:
             live_camera.set_gain(data['gain'])
         
         # Get updated settings
@@ -174,11 +194,11 @@ def update_camera_settings():
 def camera_status():
     """API endpoint to get camera status"""
     if not live_camera:
-        return jsonify({'available': False, 'streaming': False})
+        return jsonify({'available': False, 'initialized': False})
     
     return jsonify({
         'available': True,
-        'streaming': live_camera.is_streaming,
+        'initialized': live_camera.is_initialized,
         'settings': live_camera.get_settings()
     })
 
