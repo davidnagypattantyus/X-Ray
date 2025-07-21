@@ -5,38 +5,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FLIR Camera Control</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap');
+        
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             margin: 0;
             padding: 20px;
-            background-color: #0b0c0e;
-            color: #d9d9d9;
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+            line-height: 1.5;
         }
         .container {
             max-width: 1400px;
             margin: 0 auto;
-            background-color: #181b1f;
-            padding: 20px;
-            border-radius: 8px;
-            border: 1px solid #262932;
+            background-color: #2a2a2a;
+            padding: 24px;
+            border-radius: 12px;
+            border: 1px solid #404040;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
         h1 {
             color: #ffffff;
             text-align: center;
-            margin-bottom: 30px;
-            font-weight: 600;
-            font-size: 24px;
-            letter-spacing: -0.5px;
+            margin-bottom: 32px;
+            font-weight: 700;
+            font-size: 28px;
+            letter-spacing: -0.02em;
+            margin-top: 0;
         }
         .camera-section {
             display: grid;
             grid-template-columns: 2fr 1fr;
-            gap: 20px;
+            gap: 24px;
             margin-bottom: 20px;
         }
         .image-display {
-            background-color: #1e2028;
-            border-radius: 8px;
+            background-color: #333333;
+            border-radius: 12px;
             padding: 0;
             text-align: center;
             width: 100%;
@@ -47,183 +52,194 @@
             justify-content: center;
             overflow: hidden;
             position: relative;
-            border: 1px solid #262932;
+            border: 1px solid #4a4a4a;
         }
         .camera-image {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            border-radius: 8px;
+            border-radius: 12px;
         }
         .image-placeholder {
-            color: #8e8e8e;
+            color: #b0b0b0;
             font-size: 18px;
-            padding: 20px;
+            padding: 24px;
+            font-weight: 500;
         }
         .controls-panel {
-            background-color: #1e2028;
-            padding: 20px;
-            border-radius: 8px;
-            border: 1px solid #262932;
+            background-color: #333333;
+            padding: 24px;
+            border-radius: 12px;
+            border: 1px solid #4a4a4a;
         }
         .control-group {
-            margin-bottom: 20px;
+            margin-bottom: 24px;
         }
         .control-group h3 {
-            margin-bottom: 10px;
+            margin-bottom: 16px;
             color: #ffffff;
-            font-weight: 600;
+            font-weight: 700;
             font-size: 16px;
-            letter-spacing: -0.25px;
+            letter-spacing: -0.01em;
+            text-transform: uppercase;
         }
         .control-item {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
         label {
             display: block;
-            margin-bottom: 5px;
-            color: #8e8e8e;
-            font-weight: 400;
+            margin-bottom: 8px;
+            color: #b0b0b0;
+            font-weight: 500;
             font-size: 14px;
         }
         input[type="range"], input[type="number"] {
             width: 100%;
-            padding: 8px;
-            border: 1px solid #404450;
-            border-radius: 3px;
+            padding: 12px;
+            border: 1px solid #555555;
+            border-radius: 8px;
             box-sizing: border-box;
-            margin-bottom: 8px;
-            background-color: #262932;
+            margin-bottom: 12px;
+            background-color: #404040;
             color: #ffffff;
+            font-family: 'DM Sans', sans-serif;
         }
         input[type="range"] {
-            height: 40px;
-            margin-bottom: 5px;
+            height: 44px;
+            margin-bottom: 8px;
         }
         input[type="number"] {
-            background-color: #262932;
+            background-color: #404040;
             font-size: 14px;
+            font-weight: 500;
         }
         input[type="number"]:focus {
             outline: none;
-            border-color: #ff6b35;
-            box-shadow: 0 0 5px rgba(255, 107, 53, 0.3);
+            border-color: #777777;
+            box-shadow: 0 0 8px rgba(119, 119, 119, 0.3);
         }
         .range-value {
             text-align: center;
-            font-weight: 500;
+            font-weight: 600;
             color: #ffffff;
-            margin-top: 5px;
+            margin-top: 8px;
             font-size: 14px;
         }
         .button {
-            background-color: #ff6b35;
+            background-color: #666666;
             color: #ffffff;
-            padding: 12px 20px;
+            padding: 14px 24px;
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
             font-size: 14px;
-            font-weight: 500;
-            transition: all 0.15s ease;
+            font-weight: 600;
+            transition: all 0.2s ease;
             width: 100%;
-            margin-bottom: 10px;
-            letter-spacing: 0.025em;
+            margin-bottom: 12px;
+            letter-spacing: 0.01em;
+            text-transform: uppercase;
+            font-family: 'DM Sans', sans-serif;
         }
         .button:hover {
-            background-color: #e55a2b;
+            background-color: #777777;
             transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
         }
         .button.capture {
-            background-color: #dc3545;
+            background-color: #555555;
             font-size: 15px;
-            padding: 14px 20px;
-            font-weight: 600;
+            padding: 16px 24px;
+            font-weight: 700;
         }
         .button.capture:hover {
-            background-color: #c82333;
+            background-color: #666666;
         }
         .button.save {
-            background-color: #46d369;
+            background-color: #808080;
         }
         .button.save:hover {
-            background-color: #3bc460;
+            background-color: #8a8a8a;
         }
         .status-panel {
-            background-color: #262932;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            border: 1px solid #404450;
+            background-color: #404040;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            border: 1px solid #555555;
         }
         .status-item {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 8px;
+            margin-bottom: 12px;
         }
         .status-label {
-            font-weight: 400;
-            color: #8e8e8e;
+            font-weight: 500;
+            color: #b0b0b0;
             font-size: 14px;
         }
         .status-value {
             color: #ffffff;
-            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+            font-family: 'DM Sans', monospace;
             font-size: 14px;
-            font-weight: 500;
+            font-weight: 600;
         }
         .status-ready {
-            color: #46d369;
+            color: #cccccc;
         }
         .status-error {
-            color: #ff6b7d;
+            color: #999999;
         }
         .timestamp {
             position: absolute;
-            bottom: 10px;
+            bottom: 12px;
             left: 50%;
             transform: translateX(-50%);
             background-color: rgba(0, 0, 0, 0.8);
             color: #ffffff;
-            padding: 5px 10px;
-            border-radius: 3px;
+            padding: 8px 12px;
+            border-radius: 6px;
             font-size: 12px;
             z-index: 10;
+            font-weight: 500;
         }
         .message {
-            padding: 10px;
-            border-radius: 3px;
-            margin-bottom: 15px;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
             text-align: center;
+            font-weight: 500;
         }
         .message.success {
-            background-color: #1e4620;
-            color: #67c587;
-            border: 1px solid #299c40;
+            background-color: #404040;
+            color: #e0e0e0;
+            border: 1px solid #666666;
         }
         .message.error {
-            background-color: #4a1e1e;
-            color: #e57373;
-            border: 1px solid #dc3545;
+            background-color: #3a3a3a;
+            color: #cccccc;
+            border: 1px solid #555555;
         }
         .navigation {
-            margin-top: 20px;
+            margin-top: 24px;
             text-align: center;
         }
         .navigation a {
-            color: #ff6b35;
+            color: #b0b0b0;
             text-decoration: none;
             font-size: 14px;
+            font-weight: 500;
         }
         .navigation a:hover {
+            color: #cccccc;
             text-decoration: underline;
         }
         .capture-section {
-            background-color: #262932;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            border: 1px solid #404450;
+            background-color: #404040;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #555555;
         }
     </style>
 </head>

@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>X-Ray Tube Control</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+            line-height: 1.5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: #2a2a2a;
+            padding: 24px;
+            border-radius: 12px;
+            border: 1px solid #404040;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        h1 {
+            color: #ffffff;
+            text-align: center;
+            margin-bottom: 32px;
+            font-weight: 700;
+            font-size: 28px;
+            letter-spacing: -0.02em;
+            margin-top: 0;
+        }
+        .control-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+            margin-bottom: 32px;
+        }
+        .control-panel, .display-panel {
+            background-color: #333333;
+            padding: 24px;
+            border-radius: 12px;
+            border: 1px solid #4a4a4a;
+        }
+        .panel-title {
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 18px;
+            margin-bottom: 24px;
+            text-transform: uppercase;
+            letter-spacing: -0.01em;
+        }
+        .input-group, .display-group {
+            margin-bottom: 24px;
+        }
+        .input-group:last-child, .display-group:last-child {
+            margin-bottom: 0;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #b0b0b0;
+            font-weight: 500;
+            font-size: 14px;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #555555;
+            border-radius: 8px;
+            background-color: #404040;
+            color: #ffffff;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 16px;
+            font-weight: 500;
+            box-sizing: border-box;
+        }
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #777777;
+            box-shadow: 0 0 8px rgba(119, 119, 119, 0.3);
+        }
+        .display-value {
+            background-color: #404040;
+            padding: 12px 16px;
+            border-radius: 8px;
+            border: 1px solid #555555;
+            color: #ffffff;
+            font-family: 'DM Sans', monospace;
+            font-size: 16px;
+            font-weight: 600;
+            text-align: center;
+        }
+        .units {
+            color: #b0b0b0;
+            font-size: 14px;
+            margin-top: 4px;
+        }
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 16px;
+            margin-top: 32px;
+        }
+        .button {
+            background-color: #666666;
+            color: #ffffff;
+            padding: 14px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            letter-spacing: 0.01em;
+            text-transform: uppercase;
+            font-family: 'DM Sans', sans-serif;
+        }
+        .button:hover {
+            background-color: #777777;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+        .button.primary {
+            background-color: #555555;
+            font-weight: 700;
+        }
+        .button.primary:hover {
+            background-color: #666666;
+        }
+        .button.emergency {
+            background-color: #444444;
+            color: #ffffff;
+        }
+        .button.emergency:hover {
+            background-color: #555555;
+        }
+        .status-panel {
+            background-color: #404040;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            border: 1px solid #555555;
+        }
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+        .status-item {
+            text-align: center;
+        }
+        .status-label {
+            color: #b0b0b0;
+            font-size: 12px;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            margin-bottom: 6px;
+        }
+        .status-value {
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: 700;
+        }
+        .status-good {
+            color: #cccccc;
+        }
+        .status-error {
+            color: #999999;
+        }
+        .message {
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            text-align: center;
+            font-weight: 500;
+        }
+        .message.success {
+            background-color: #404040;
+            color: #e0e0e0;
+            border: 1px solid #666666;
+        }
+        .message.error {
+            background-color: #3a3a3a;
+            color: #cccccc;
+            border: 1px solid #555555;
+        }
+        .navigation {
+            margin-top: 24px;
+            text-align: center;
+        }
+        .navigation a {
+            color: #b0b0b0;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            margin: 0 16px;
+        }
+        .navigation a:hover {
+            color: #cccccc;
+            text-decoration: underline;
+        }
+        .realtime-updates {
+            background-color: #333333;
+            padding: 16px;
+            border-radius: 8px;
+            border: 1px solid #4a4a4a;
+            margin-top: 24px;
+        }
+        .realtime-updates h3 {
+            margin: 0 0 12px 0;
+            color: #ffffff;
+            font-size: 14px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+        .update-time {
+            color: #b0b0b0;
+            font-size: 12px;
+            font-family: 'DM Sans', monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>X-Ray Tube Control</h1>
+        
+        <div id="messageArea"></div>
+        
+        <div class="status-panel">
+            <div class="status-grid">
+                <div class="status-item">
+                    <div class="status-label">System Status</div>
+                    <div id="systemStatus" class="status-value status-good">Initializing...</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-label">Control Loop</div>
+                    <div id="loopStatus" class="status-value status-good">Stopped</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-label">Tube Power</div>
+                    <div id="tubePower" class="status-value">0 W</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-label">Last Update</div>
+                    <div id="lastUpdate" class="status-value update-time">Never</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="control-grid">
+            <div class="control-panel">
+                <h2 class="panel-title">Control Parameters</h2>
+                
+                <div class="input-group">
+                    <label for="tubeCurrentInput">Tube Current</label>
+                    <input type="number" id="tubeCurrentInput" min="0" max="500" step="1" value="0" placeholder="Enter current in mA">
+                    <div class="units">mA (0 - 500)</div>
+                </div>
+                
+                <div class="input-group">
+                    <label for="tubeVoltageInput">Tube Voltage</label>
+                    <input type="number" id="tubeVoltageInput" min="0" max="150" step="1" value="0" placeholder="Enter voltage in kV">
+                    <div class="units">kV (0 - 150)</div>
+                </div>
+            </div>
+            
+            <div class="display-panel">
+                <h2 class="panel-title">Feedback Parameters</h2>
+                
+                <div class="display-group">
+                    <label>Filament Current</label>
+                    <div id="filamentCurrent" class="display-value">0.000</div>
+                    <div class="units">A</div>
+                </div>
+                
+                <div class="display-group">
+                    <label>Filament Voltage</label>
+                    <div id="filamentVoltage" class="display-value">0.00</div>
+                    <div class="units">V</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="button-group">
+            <button id="startStopBtn" class="button primary">Start Control Loop</button>
+            <button id="updateParamsBtn" class="button">Update Parameters</button>
+            <button id="emergencyStopBtn" class="button emergency">Emergency Stop</button>
+        </div>
+        
+        <div class="realtime-updates">
+            <h3>Real-time Feedback</h3>
+            <div class="status-grid">
+                <div class="status-item">
+                    <div class="status-label">Actual Tube Current</div>
+                    <div id="actualTubeCurrent" class="status-value">0.00 mA</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-label">Actual Tube Voltage</div>
+                    <div id="actualTubeVoltage" class="status-value">0.00 kV</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="navigation">
+            <a href="{{ url_for('home') }}">← Back to Home</a>
+            <a href="{{ url_for('live_camera_page') }}">Camera Control</a>
+        </div>
+    </div>
+    
+    <script>
+        let statusUpdateInterval;
+        let isControlLoopRunning = false;
+        
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            updateSystemStatus();
+            statusUpdateInterval = setInterval(updateSystemStatus, 1000);
+            
+            // Set up event listeners
+            document.getElementById('startStopBtn').addEventListener('click', toggleControlLoop);
+            document.getElementById('updateParamsBtn').addEventListener('click', updateParameters);
+            document.getElementById('emergencyStopBtn').addEventListener('click', emergencyStop);
+        });
+        
+        async function updateSystemStatus() {
+            try {
+                const response = await fetch('/api/control-loop/status');
+                const data = await response.json();
+                
+                if (data.success) {
+                    const status = data.parameters.status;
+                    const actuals = data.parameters.actuals;
+                    const targets = data.parameters.targets;
+                    
+                    // Update status indicators
+                    document.getElementById('systemStatus').textContent = 
+                        status.initialized ? 'Ready' : 'Not Ready';
+                    document.getElementById('loopStatus').textContent = 
+                        status.running ? 'Running' : 'Stopped';
+                    
+                    // Calculate tube power (simplified: P = V * I)
+                    const power = (actuals.tube_voltage * actuals.tube_current).toFixed(1);
+                    document.getElementById('tubePower').textContent = `${power} W`;
+                    
+                    // Update last update time
+                    const updateTime = new Date(status.last_update);
+                    document.getElementById('lastUpdate').textContent = updateTime.toLocaleTimeString();
+                    
+                    // Update feedback values
+                    document.getElementById('filamentCurrent').textContent = actuals.filament_current.toFixed(3);
+                    document.getElementById('filamentVoltage').textContent = actuals.filament_voltage.toFixed(2);
+                    document.getElementById('actualTubeCurrent').textContent = `${actuals.tube_current} mA`;
+                    document.getElementById('actualTubeVoltage').textContent = `${actuals.tube_voltage} kV`;
+                    
+                    // Update control loop status
+                    isControlLoopRunning = status.running;
+                    document.getElementById('startStopBtn').textContent = 
+                        isControlLoopRunning ? 'Stop Control Loop' : 'Start Control Loop';
+                }
+            } catch (error) {
+                console.error('Error fetching system status:', error);
+                document.getElementById('systemStatus').textContent = 'Unknown';
+            }
+        }
+        
+        async function toggleControlLoop() {
+            const btn = document.getElementById('startStopBtn');
+            const originalText = btn.textContent;
+            btn.disabled = true;
+            
+            try {
+                const action = isControlLoopRunning ? 'stop' : 'start';
+                const response = await fetch(`/api/control-loop/${action}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showMessage(`Control loop ${action}ed successfully`, 'success');
+                    updateSystemStatus();
+                } else {
+                    showMessage(`Failed to ${action} control loop: ` + data.error, 'error');
+                }
+            } catch (error) {
+                showMessage(`Error: ${error.message}`, 'error');
+            } finally {
+                btn.disabled = false;
+            }
+        }
+        
+        async function updateParameters() {
+            const btn = document.getElementById('updateParamsBtn');
+            const originalText = btn.textContent;
+            btn.textContent = 'Updating...';
+            btn.disabled = true;
+            
+            try {
+                const tubeCurrent = parseFloat(document.getElementById('tubeCurrentInput').value);
+                const tubeVoltage = parseFloat(document.getElementById('tubeVoltageInput').value);
+                
+                const response = await fetch('/api/control-loop/parameters', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        tube_current: tubeCurrent,
+                        tube_voltage: tubeVoltage
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showMessage('Parameters updated successfully', 'success');
+                    updateSystemStatus();
+                } else {
+                    showMessage('Failed to update parameters: ' + data.error, 'error');
+                }
+            } catch (error) {
+                showMessage('Error updating parameters: ' + error.message, 'error');
+            } finally {
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }
+        }
+        
+        async function emergencyStop() {
+            const btn = document.getElementById('emergencyStopBtn');
+            btn.disabled = true;
+            
+            try {
+                const response = await fetch('/api/control-loop/emergency-stop', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showMessage('Emergency stop activated - all parameters set to zero', 'success');
+                    document.getElementById('tubeCurrentInput').value = '0';
+                    document.getElementById('tubeVoltageInput').value = '0';
+                    updateSystemStatus();
+                } else {
+                    showMessage('Emergency stop failed: ' + data.error, 'error');
+                }
+            } catch (error) {
+                showMessage('Error during emergency stop: ' + error.message, 'error');
+            } finally {
+                setTimeout(() => { btn.disabled = false; }, 2000);
+            }
+        }
+        
+        function showMessage(text, type) {
+            const messageArea = document.getElementById('messageArea');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            messageDiv.textContent = text;
+            
+            messageArea.appendChild(messageDiv);
+            
+            // Remove message after 5 seconds
+            setTimeout(() => {
+                messageDiv.remove();
+            }, 5000);
+        }
+        
+        // Clean up intervals when page is unloaded
+        window.addEventListener('beforeunload', function() {
+            if (statusUpdateInterval) clearInterval(statusUpdateInterval);
+        });
+    </script>
+</body>
+</html> 
