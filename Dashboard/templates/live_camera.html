@@ -6,23 +6,27 @@
     <title>FLIR Camera Control</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             margin: 0;
             padding: 20px;
-            background-color: #f0f0f0;
+            background-color: #0b0c0e;
+            color: #d9d9d9;
         }
         .container {
             max-width: 1400px;
             margin: 0 auto;
-            background-color: white;
+            background-color: #181b1f;
             padding: 20px;
             border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border: 1px solid #262932;
         }
         h1 {
-            color: #333;
+            color: #ffffff;
             text-align: center;
             margin-bottom: 30px;
+            font-weight: 600;
+            font-size: 24px;
+            letter-spacing: -0.5px;
         }
         .camera-section {
             display: grid;
@@ -31,7 +35,7 @@
             margin-bottom: 20px;
         }
         .image-display {
-            background-color: #f5f5f5;
+            background-color: #1e2028;
             border-radius: 8px;
             padding: 0;
             text-align: center;
@@ -43,6 +47,7 @@
             justify-content: center;
             overflow: hidden;
             position: relative;
+            border: 1px solid #262932;
         }
         .camera-image {
             width: 100%;
@@ -51,21 +56,25 @@
             border-radius: 8px;
         }
         .image-placeholder {
-            color: #666;
+            color: #8e8e8e;
             font-size: 18px;
             padding: 20px;
         }
         .controls-panel {
-            background-color: #f8f9fa;
+            background-color: #1e2028;
             padding: 20px;
             border-radius: 8px;
+            border: 1px solid #262932;
         }
         .control-group {
             margin-bottom: 20px;
         }
         .control-group h3 {
             margin-bottom: 10px;
-            color: #333;
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 16px;
+            letter-spacing: -0.25px;
         }
         .control-item {
             margin-bottom: 15px;
@@ -73,72 +82,79 @@
         label {
             display: block;
             margin-bottom: 5px;
-            color: #666;
-            font-weight: bold;
+            color: #8e8e8e;
+            font-weight: 400;
+            font-size: 14px;
         }
         input[type="range"], input[type="number"] {
             width: 100%;
             padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+            border: 1px solid #404450;
+            border-radius: 3px;
             box-sizing: border-box;
             margin-bottom: 8px;
+            background-color: #262932;
+            color: #ffffff;
         }
         input[type="range"] {
             height: 40px;
             margin-bottom: 5px;
         }
         input[type="number"] {
-            background-color: #f8f9fa;
+            background-color: #262932;
             font-size: 14px;
         }
         input[type="number"]:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
+            border-color: #ff6b35;
+            box-shadow: 0 0 5px rgba(255, 107, 53, 0.3);
         }
         .range-value {
             text-align: center;
-            font-weight: bold;
-            color: #333;
+            font-weight: 500;
+            color: #ffffff;
             margin-top: 5px;
+            font-size: 14px;
         }
         .button {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 12px 24px;
+            background-color: #ff6b35;
+            color: #ffffff;
+            padding: 12px 20px;
             border: none;
-            border-radius: 4px;
+            border-radius: 6px;
             cursor: pointer;
-            font-size: 16px;
-            font-weight: bold;
-            transition: all 0.3s ease;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.15s ease;
             width: 100%;
             margin-bottom: 10px;
+            letter-spacing: 0.025em;
         }
         .button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            background-color: #e55a2b;
+            transform: translateY(-1px);
         }
         .button.capture {
-            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
-            font-size: 18px;
-            padding: 16px 24px;
+            background-color: #dc3545;
+            font-size: 15px;
+            padding: 14px 20px;
+            font-weight: 600;
         }
         .button.capture:hover {
-            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+            background-color: #c82333;
         }
         .button.save {
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            background-color: #46d369;
         }
         .button.save:hover {
-            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+            background-color: #3bc460;
         }
         .status-panel {
-            background-color: #e8f4f8;
+            background-color: #262932;
             padding: 15px;
             border-radius: 8px;
             margin-bottom: 20px;
+            border: 1px solid #404450;
         }
         .status-item {
             display: flex;
@@ -146,63 +162,74 @@
             margin-bottom: 8px;
         }
         .status-label {
-            font-weight: bold;
-            color: #333;
+            font-weight: 400;
+            color: #8e8e8e;
+            font-size: 14px;
         }
         .status-value {
-            color: #666;
+            color: #ffffff;
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .status-ready {
+            color: #46d369;
+        }
+        .status-error {
+            color: #ff6b7d;
         }
         .timestamp {
             position: absolute;
             bottom: 10px;
             left: 50%;
             transform: translateX(-50%);
-            background-color: rgba(0, 0, 0, 0.7);
-            color: white;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: #ffffff;
             padding: 5px 10px;
-            border-radius: 4px;
+            border-radius: 3px;
             font-size: 12px;
             z-index: 10;
         }
         .message {
             padding: 10px;
-            border-radius: 4px;
+            border-radius: 3px;
             margin-bottom: 15px;
             text-align: center;
         }
         .message.success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
+            background-color: #1e4620;
+            color: #67c587;
+            border: 1px solid #299c40;
         }
         .message.error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
+            background-color: #4a1e1e;
+            color: #e57373;
+            border: 1px solid #dc3545;
         }
         .navigation {
             margin-top: 20px;
             text-align: center;
         }
         .navigation a {
-            color: #0066cc;
+            color: #ff6b35;
             text-decoration: none;
+            font-size: 14px;
         }
         .navigation a:hover {
             text-decoration: underline;
         }
         .capture-section {
-            background-color: #fff3cd;
+            background-color: #262932;
             padding: 15px;
             border-radius: 8px;
             margin-bottom: 15px;
-            border: 2px solid #ffeaa7;
+            border: 1px solid #404450;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>📸 FLIR Camera Control</h1>
+        <h1>FLIR Camera Control</h1>
         
         <div id="messageArea"></div>
         
@@ -210,7 +237,7 @@
             <div class="image-display">
                 <img id="cameraImage" class="camera-image" style="display: none;" alt="Camera capture">
                 <div id="imagePlaceholder" class="image-placeholder">
-                    <p>📷 No image captured yet</p>
+                    <p>No image captured yet</p>
                     <p>Click "Take Exposure" to capture an image</p>
                 </div>
                 <div id="imageTimestamp" class="timestamp"></div>
@@ -218,7 +245,7 @@
             
             <div class="controls-panel">
                 <div class="status-panel">
-                    <h3>📊 Camera Status</h3>
+                    <h3>Camera Status</h3>
                     <div class="status-item">
                         <span class="status-label">Initialized:</span>
                         <span id="cameraStatus" class="status-value">Checking...</span>
@@ -234,17 +261,17 @@
                 </div>
                 
                 <div class="capture-section">
-                    <h3>📸 Capture Control</h3>
-                    <button id="captureBtn" class="button capture">📷 Take Exposure</button>
+                    <h3>Capture Control</h3>
+                    <button id="captureBtn" class="button capture">Take Exposure</button>
                 </div>
                 
                 <div class="control-group">
-                    <h3>💾 Image Control</h3>
-                    <button id="saveImageBtn" class="button save">💾 Save Current Image</button>
+                    <h3>Image Control</h3>
+                    <button id="saveImageBtn" class="button save">Save Current Image</button>
                 </div>
                 
                 <div class="control-group">
-                    <h3>⚙️ Camera Settings</h3>
+                    <h3>Camera Settings</h3>
                     
                     <div class="control-item">
                         <label for="exposureSlider">Exposure Time (ms):</label>
@@ -260,7 +287,7 @@
                         <input type="number" id="isoInput" min="100" max="6400" step="50" value="{{ settings.iso or 100 }}" placeholder="Enter ISO value">
                     </div>
                     
-                    <button id="updateSettingsBtn" class="button">🔧 Update Settings</button>
+                    <button id="updateSettingsBtn" class="button">Update Settings</button>
                 </div>
             </div>
         </div>
@@ -313,7 +340,7 @@
         async function captureImage() {
             const btn = document.getElementById('captureBtn');
             const originalText = btn.textContent;
-            btn.textContent = '📷 Capturing...';
+            btn.textContent = 'Capturing...';
             btn.disabled = true;
             
             try {
@@ -327,14 +354,14 @@
                 const data = await response.json();
                 
                 if (data.success) {
-                    showMessage('✅ Image captured successfully!', 'success');
+                    showMessage('Image captured successfully!', 'success');
                     // Wait a moment then get the image
                     setTimeout(updateCameraImage, 500);
                 } else {
-                    showMessage('❌ Failed to capture image: ' + data.error, 'error');
+                    showMessage('Failed to capture image: ' + data.error, 'error');
                 }
             } catch (error) {
-                showMessage('❌ Error capturing image: ' + error.message, 'error');
+                showMessage('Error capturing image: ' + error.message, 'error');
             } finally {
                 btn.textContent = originalText;
                 btn.disabled = false;
@@ -371,7 +398,7 @@
                 const data = await response.json();
                 
                 document.getElementById('cameraStatus').textContent = 
-                    data.initialized ? '🟢 Ready' : '🔴 Not Ready';
+                    data.initialized ? 'Ready' : 'Not Ready';
                 
                 if (data.settings) {
                     if (data.settings.width && data.settings.height) {
@@ -384,14 +411,14 @@
                 }
             } catch (error) {
                 console.error('Error fetching camera status:', error);
-                document.getElementById('cameraStatus').textContent = '❓ Unknown';
+                document.getElementById('cameraStatus').textContent = 'Unknown';
             }
         }
         
         async function saveCurrentImage() {
             const btn = document.getElementById('saveImageBtn');
             const originalText = btn.textContent;
-            btn.textContent = '💾 Saving...';
+            btn.textContent = 'Saving...';
             btn.disabled = true;
             
             try {
@@ -405,12 +432,12 @@
                 const data = await response.json();
                 
                 if (data.success) {
-                    showMessage(`✅ Image saved to Desktop as ${data.filename}`, 'success');
+                    showMessage(`Image saved to Desktop as ${data.filename}`, 'success');
                 } else {
-                    showMessage('❌ Failed to save image: ' + data.error, 'error');
+                    showMessage('Failed to save image: ' + data.error, 'error');
                 }
             } catch (error) {
-                showMessage('❌ Error saving image: ' + error.message, 'error');
+                showMessage('Error saving image: ' + error.message, 'error');
             } finally {
                 btn.textContent = originalText;
                 btn.disabled = false;
@@ -420,7 +447,7 @@
         async function updateCameraSettings() {
             const btn = document.getElementById('updateSettingsBtn');
             const originalText = btn.textContent;
-            btn.textContent = '🔧 Updating...';
+            btn.textContent = 'Updating...';
             btn.disabled = true;
             
             try {
@@ -442,13 +469,13 @@
                 const data = await response.json();
                 
                 if (data.success) {
-                    showMessage('✅ Camera settings updated successfully', 'success');
+                    showMessage('Camera settings updated successfully', 'success');
                     updateCameraStatus(); // Refresh status
                 } else {
-                    showMessage('❌ Failed to update settings: ' + data.error, 'error');
+                    showMessage('Failed to update settings: ' + data.error, 'error');
                 }
             } catch (error) {
-                showMessage('❌ Error updating settings: ' + error.message, 'error');
+                showMessage('Error updating settings: ' + error.message, 'error');
             } finally {
                 btn.textContent = originalText;
                 btn.disabled = false;

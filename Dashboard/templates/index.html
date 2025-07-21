@@ -3,16 +3,149 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>X-Ray Camera Dashboard</title>
-    <script>
-        // Automatically redirect to live camera view
-        window.location.href = "{{ url_for('live_camera_page') }}";
-    </script>
+    <title>X-Ray Camera System</title>
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #0b0c0e;
+            color: #d9d9d9;
+            font-size: 14px;
+        }
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            background-color: #181b1f;
+            padding: 32px;
+            border-radius: 6px;
+            border: 1px solid #262932;
+            text-align: center;
+        }
+        h1 {
+            color: #ffffff;
+            margin-bottom: 24px;
+            font-size: 24px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+        .camera-button {
+            display: inline-block;
+            padding: 12px 20px;
+            background-color: #ff6b35;
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.15s ease;
+            border: none;
+            cursor: pointer;
+            letter-spacing: 0.025em;
+        }
+        .camera-button:hover {
+            background-color: #e55a2b;
+            transform: translateY(-1px);
+        }
+        .system-info {
+            margin-top: 32px;
+            text-align: left;
+            background-color: #1e2028;
+            padding: 20px;
+            border-radius: 6px;
+            border: 1px solid #262932;
+        }
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            font-size: 13px;
+        }
+        .info-row:last-child {
+            margin-bottom: 0;
+        }
+        .info-label {
+            color: #8e8e8e;
+            font-weight: 400;
+        }
+        .info-value {
+            color: #ffffff;
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+            font-weight: 500;
+        }
+        .status-indicators {
+            margin-top: 24px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .status-item {
+            background-color: #1e2028;
+            padding: 16px;
+            border-radius: 6px;
+            border: 1px solid #262932;
+            text-align: center;
+        }
+        .status-item h4 {
+            margin: 0 0 6px 0;
+            color: #8e8e8e;
+            font-size: 11px;
+            text-transform: uppercase;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+        .status-value {
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .status-good {
+            color: #46d369;
+        }
+    </style>
 </head>
 <body>
-    <div style="text-align: center; padding: 50px; font-family: Arial, sans-serif;">
-        <h1>📸 Redirecting to Camera Dashboard...</h1>
-        <p>If you are not redirected automatically, <a href="{{ url_for('live_camera_page') }}">click here</a>.</p>
+    <div class="container">
+        <h1>X-Ray Camera System</h1>
+        
+        <a href="{{ url_for('live_camera_page') }}" class="camera-button">
+            Launch Interface
+        </a>
+        
+        <div class="system-info">
+            <div class="info-row">
+                <span class="info-label">Camera Model</span>
+                <span class="info-value">FLIR Blackfly S</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Resolution</span>
+                <span class="info-value">3648 × 3648</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Aspect Ratio</span>
+                <span class="info-value">1:1</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Exposure Range</span>
+                <span class="info-value">10ms – 5000ms</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">ISO Range</span>
+                <span class="info-value">100 – 6400</span>
+            </div>
+        </div>
+        
+        <div class="status-indicators">
+            <div class="status-item">
+                <h4>System</h4>
+                <div class="status-value status-good">Online</div>
+            </div>
+            <div class="status-item">
+                <h4>Camera</h4>
+                <div class="status-value status-good">Ready</div>
+            </div>
+        </div>
     </div>
 </body>
 </html> 
