@@ -21,15 +21,18 @@ COPY Dashboard/spinnaker_python-4.2.0.88-cp310-cp310-linux_aarch64.tar /tmp/spin
 
 # Install Spinnaker system package first with automatic license acceptance
 ENV DEBIAN_FRONTEND=noninteractive
+ENV TERM=xterm
 RUN cd /tmp && \
     tar xf spinnaker-pkg.tar && \
     cd spinnaker-4.2.0.88-arm64 && \
     apt-get update && \
-    expect -c "spawn dpkg -i ./libgentl_*.deb; expect \"Do you accept the EULA license terms?\"; send \"yes\r\"; interact" || \
-    (echo "libgentl libgentl/eula_accept boolean true" | debconf-set-selections && \
-     echo "libgentl libgentl/eula_accept seen true" | debconf-set-selections && \
-     DEBIAN_FRONTEND=noninteractive dpkg -i --force-confnew ./libgentl_*.deb) && \
-    apt-get install -f -y && \
+    echo "libgentl libgentl/eula_accept boolean true" | debconf-set-selections && \
+    echo "libgentl libgentl/eula_accept seen true" | debconf-set-selections && \
+    mkdir -p gentl_fixed && \
+    dpkg-deb -R ./libgentl_*.deb gentl_fixed/ && \
+    rm gentl_fixed/DEBIAN/preinst && \
+    dpkg-deb -b gentl_fixed/ libgentl_fixed.deb && \
+    dpkg -i libgentl_fixed.deb && \
     apt-get install -y ./libspinnaker_*.deb && \
     apt-get install -y ./libspinnaker-c_*.deb && \
     apt-get install -y ./libspinnaker-dev_*.deb && \

@@ -1,4 +1,10 @@
-import PySpin
+try:
+    import PySpin
+    PYSPIN_AVAILABLE = True
+except ImportError:
+    PySpin = None
+    PYSPIN_AVAILABLE = False
+
 import numpy as np
 from pathlib import Path
 import time
@@ -6,6 +12,9 @@ from datetime import datetime
 
 class FlirCamera:
     def __init__(self):
+        if not PYSPIN_AVAILABLE:
+            raise RuntimeError("PySpin not available - FLIR camera functionality disabled")
+        
         self.system = PySpin.System.GetInstance()
         self.cam = None
         self.nodemap = None

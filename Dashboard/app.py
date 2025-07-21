@@ -10,7 +10,15 @@ from dotenv import load_dotenv
 from influxdb_client import InfluxDBClient, Point
 from influxdb_client.client.write_api import SYNCHRONOUS
 import logging
-from flir import FlirCamera
+
+# Optional FLIR camera import
+try:
+    from flir_live import FlirLiveCamera
+    FLIR_AVAILABLE = True
+except ImportError as e:
+    print(f"FLIR camera not available: {e}")
+    FlirLiveCamera = None
+    FLIR_AVAILABLE = False
 
 # Load environment variables
 load_dotenv('/app/config.env')
@@ -23,12 +31,16 @@ app = Flask(__name__)
 app.secret_key = os.getenv('FLASK_SECRET_KEY', 'dev-secret-key-change-in-production')
 
 # Initialize camera
-camera = None
-try:
-    camera = FlirCamera()
-    logger.info("Camera initialized successfully")
-except Exception as e:
-    logger.error(f"Failed to initialize camera: {e}")
+live_camera = None
+if FLIR_AVAILABLE:
+    try:
+        live_camera = FlirLiveCamera()
+        live_camera.start_streaming()
+        logger.info("Live camera initialized and streaming started")
+    except Exception as e:
+        logger.error(f"Failed to initialize live camera: {e}")
+else:
+    logger.info("FLIR camera not available - running without camera support")
 
 # Database connections
 redis_client = None
@@ -91,6 +103,84 @@ def landing():
 def xray_image():
     """X-Ray image display page"""
     return render_template('xray_image.html')
+
+@app.route('/live-camera')
+def live_camera_page():
+    """Live camera page with streaming and controls"""
+    if not live_camera:
+        flash('Live camera not available', 'error')
+        return redirect(url_for('home'))
+    
+    settings = live_camera.get_settings() if live_camera else {}
+    return render_template('live_camera.html', settings=settings)
+
+@app.route('/api/camera/image')
+def get_camera_image():
+    """API endpoint to get the latest camera image"""
+    if not live_camera:
+        return jsonify({'error': 'Camera not available'}), 503
+    
+    image_data = live_camera.get_latest_image()
+    if image_data:
+        return jsonify({
+            'success': True,
+            'image': image_data,
+            'timestamp': datetime.now().isoformat()
+        })
+    else:
+        return jsonify({'error': 'No image available'}), 404
+
+@app.route('/api/camera/save', methods=['POST'])
+def save_camera_image():
+    """API endpoint to save the current image to desktop"""
+    if not live_camera:
+        return jsonify({'error': 'Camera not available'}), 503
+    
+    filename = live_camera.save_current_image()
+    if filename:
+        return jsonify({
+            'success': True,
+            'filename': filename,
+            'message': f'Image saved as {filename}'
+        })
+    else:
+        return jsonify({'error': 'Failed to save image'}), 400
+
+@app.route('/api/camera/settings', methods=['POST'])
+def update_camera_settings():
+    """API endpoint to update camera settings"""
+    if not live_camera:
+        return jsonify({'error': 'Camera not available'}), 503
+    
+    try:
+        data = request.get_json()
+        
+        if 'exposure' in data:
+            live_camera.set_exposure(data['exposure'])
+        
+        if 'gain' in data:
+            live_camera.set_gain(data['gain'])
+        
+        # Get updated settings
+        settings = live_camera.get_settings()
+        return jsonify({
+            'success': True,
+            'settings': settings
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 400
+
+@app.route('/api/camera/status')
+def camera_status():
+    """API endpoint to get camera status"""
+    if not live_camera:
+        return jsonify({'available': False, 'streaming': False})
+    
+    return jsonify({
+        'available': True,
+        'streaming': live_camera.is_streaming,
+        'settings': live_camera.get_settings()
+    })
 
 @app.route('/redis')
 def redis_demo():
@@ -244,66 +334,6 @@ def influxdb_write():
         flash(f'Error writing to InfluxDB: {e}', 'error')
     
     return redirect(url_for('influxdb_demo'))
-
-@app.route('/camera')
-def camera_control():
-    """Camera control page"""
-    if not camera:
-        flash('Camera not available', 'error')
-        return redirect(url_for('home'))
-    
-    settings = camera.get_current_settings() if camera else None
-    return render_template('camera_control.html', settings=settings)
-
-@app.route('/camera/settings', methods=['POST'])
-def update_camera_settings():
-    """Update camera settings"""
-    if not camera:
-        return jsonify({'error': 'Camera not available'}), 503
-    
-    try:
-        # Update gain
-        if 'gain' in request.form:
-            camera.set_gain(request.form['gain'])
-        
-        # Update exposure
-        if 'exposure_time' in request.form:
-            camera.set_exposure_time(request.form['exposure_time'])
-        
-        # Update ROI
-        if all(k in request.form for k in ['width', 'height']):
-            camera.set_roi(
-                width=request.form['width'],
-                height=request.form['height'],
-                offset_x=request.form.get('offset_x', 0),
-                offset_y=request.form.get('offset_y', 0)
-            )
-        
-        # Get updated settings
-        settings = camera.get_current_settings()
-        flash('Camera settings updated successfully', 'success')
-        return jsonify(settings)
-    except Exception as e:
-        return jsonify({'error': str(e)}), 400
-
-@app.route('/camera/capture', methods=['POST'])
-def capture_image():
-    """Capture an image from the camera"""
-    if not camera:
-        return jsonify({'error': 'Camera not available'}), 503
-    
-    try:
-        filename = camera.capture_image()
-        if filename:
-            return jsonify({
-                'success': True,
-                'filename': filename,
-                'url': url_for('static', filename=f'captures/{filename}')
-            })
-        else:
-            return jsonify({'error': 'Failed to capture image'}), 400
-    except Exception as e:
-        return jsonify({'error': str(e)}), 400
 
 @app.route('/health')
 def health():

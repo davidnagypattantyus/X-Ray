@@ -15,7 +15,7 @@ services:
     group_add:
       - "${DOCKER_GROUP_ID:-991}"
     ports:
-      - "8080:80"
+      - "80:80"
     environment:
       - REDIS_HOST=redis
       - INFLUXDB_HOST=influxdb
