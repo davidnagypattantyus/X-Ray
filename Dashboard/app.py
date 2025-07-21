@@ -13,7 +13,7 @@ import logging
 
 # Optional FLIR camera import
 try:
-    from flir_live import FlirLiveCamera
+    from flir_live_simple import FlirLiveCamera
     FLIR_AVAILABLE = True
 except ImportError as e:
     print(f"FLIR camera not available: {e}")
@@ -364,4 +364,4 @@ def info():
     })
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=80, debug=True) 
+    app.run(host='0.0.0.0', port=8080, debug=True) 

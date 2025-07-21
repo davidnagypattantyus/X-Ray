@@ -34,6 +34,18 @@ services:
       timeout: 10s
       retries: 3
   
+  camera-test:
+    build:
+      context: .
+      dockerfile: Dockerfile.camera
+    container_name: camera-test
+    privileged: true # This gives the container extended permissions to access host devices
+    volumes:
+      - /dev/bus/usb:/dev/bus/usb
+    restart: unless-stopped
+    networks:
+      - app-network
+
   logger:
     build:
       context: .
@@ -132,3 +144,4 @@ volumes:
   redis_data:
   grafana_data:
   influxdb_data:
+  portainer_data:

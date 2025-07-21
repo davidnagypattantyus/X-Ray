@@ -1,0 +1,62 @@
+# Dockerfile for a dedicated FLIR camera testing environment
+# This replicates the successful bare-metal setup.
+# Using Python 3.10 to match the provided PySpin wheel file (cp310).
+FROM python:3.10-slim
+
+# Set the working directory in the container
+WORKDIR /app
+
+# Install necessary system dependencies for USB access and package installation
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libusb-1.0-0 \
+    libusb-1.0-0-dev \
+    wget \
+    lsb-release \
+    iputils-ping \
+    libgomp1 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy the Spinnaker SDK and Python wrapper files into the container
+COPY Dashboard/spinnaker-4.2.0.88-arm64-22.04-pkg.tar /tmp/spinnaker-pkg.tar
+# COPY THE TAR INSTEAD OF THE WHEEL
+COPY Dashboard/spinnaker_python-4.2.0.88-cp310-cp310-linux_aarch64.tar /tmp/spinnaker-python.tar
+
+# Install the Spinnaker SDK system libraries (.deb files) and the Python wrapper
+RUN cd /tmp && \
+    # --- Part 1: Install System Libraries ---
+    tar -xf spinnaker-pkg.tar && \
+    cd spinnaker-4.2.0.88-arm64/ && \
+    mkdir gentl_fixed && \
+    dpkg-deb -R libgentl_*.deb gentl_fixed/ && \
+    rm gentl_fixed/DEBIAN/preinst && \
+    dpkg-deb -b gentl_fixed/ libgentl_fixed.deb && \
+    apt-get install -y ./libgentl_fixed.deb && \
+    rm libgentl_*.deb && \
+    rm spinview-qt_*.deb && \
+    apt-get install -y ./*.deb && \
+    \
+    # --- Part 2: Install Python Wrapper ---
+    # Go back to /tmp and unpack the python tarball to get the real wheel file
+    cd /tmp && \
+    tar -xf spinnaker-python.tar && \
+    # Now install the wheel file that was just unpacked
+    pip install spinnaker_python-4.2.0.88-cp310-cp310-linux_aarch64.whl && \
+    \
+    # --- Part 3: Clean up everything ---
+    cd / && rm -rf /tmp/*
+
+# Copy the requirements file that lists all other Python packages
+COPY camera_requirements.txt .
+
+# Install all other Python dependencies
+RUN pip install -r camera_requirements.txt
+
+# Copy the camera test script into the container
+COPY camera_test.py .
+
+# Give execute permissions to the script
+RUN chmod +x ./camera_test.py
+
+# The default command to run when the container starts
+# It will keep the container running so we can exec into it.
+CMD ["tail", "-f", "/dev/null"] 

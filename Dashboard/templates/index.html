@@ -79,16 +79,9 @@
 <body>
     <div class="container">
         <h1>X-Ray Dashboard</h1>
-        
-        <div class="primary-action">
-            <a href="{{ url_for('xray_image') }}" class="xray-button">
-                🔬 View X-Ray Image
-            </a>
-        </div>
-        
-        <div class="section-title">Additional Tools</div>
         <ul class="nav-links">
-            <li><a href="{{ url_for('camera_control') }}">FLIR Camera Control</a></li>
+            <li><a href="{{ url_for('live_camera_page') }}">🔴 Live FLIR Camera</a></li>
+            <li><a href="{{ url_for('xray_image') }}">View X-Ray Image</a></li>
             <li><a href="{{ url_for('redis_demo') }}">Redis Demo</a></li>
             <li><a href="{{ url_for('influxdb_demo') }}">InfluxDB Demo</a></li>
         </ul>
