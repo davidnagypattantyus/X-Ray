@@ -54,6 +54,11 @@
             position: relative;
             border: 1px solid #4a4a4a;
         }
+        .image-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
         .camera-image {
             width: 100%;
             height: 100%;
@@ -203,6 +208,89 @@
             z-index: 10;
             font-weight: 500;
         }
+        
+        /* Coordinate overlay styles */
+        .coordinate-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+        }
+        
+        .grid-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .grid-line {
+            position: absolute;
+            background-color: #ff0000;
+        }
+        
+        .grid-line.vertical {
+            width: 1.5px;
+            height: 20px;
+            top: 0;
+        }
+        
+        .grid-line.horizontal {
+            width: 20px;
+            height: 1.5px;
+            left: 0;
+        }
+        
+        .grid-line.vertical.bottom {
+            bottom: 0;
+            top: auto;
+        }
+        
+        .grid-line.horizontal.right {
+            right: 0;
+            left: auto;
+        }
+        
+        .axis-labels {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+                .axis-tick {
+            position: absolute;
+            color: #ff0000;
+            font-size: 12px;
+            font-weight: 700;
+            background: none !important;
+            background-color: transparent !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            border: none !important;
+            outline: none !important;
+            box-shadow: none !important;
+            text-shadow: none !important;
+            -webkit-text-stroke: 0.5px #000000;
+            font-family: 'DM Sans', monospace;
+        }
+        
+        .x-tick {
+            bottom: 4px; /* Center 12px text in 20px space: 10px center - 6px half-height = 4px from bottom */
+            transform: translateX(-50%);
+        }
+        
+        .y-tick {
+            left: 10px; /* Halfway between image border and tick end (20px tick / 2) */
+            transform: translateY(-50%);
+        }
+        
+
         .message {
             padding: 16px;
             border-radius: 8px;
@@ -251,12 +339,66 @@
         
         <div class="camera-section">
             <div class="image-display">
-                <img id="cameraImage" class="camera-image" style="display: none;" alt="Camera capture">
-                <div id="imagePlaceholder" class="image-placeholder">
-                    <p>No image captured yet</p>
-                    <p>Click "Take Exposure" to capture an image</p>
+                <div class="image-container">
+                    <img id="cameraImage" class="camera-image" style="display: none;" alt="Camera capture">
+                    <div id="imagePlaceholder" class="image-placeholder">
+                        <p>No image captured yet</p>
+                        <p>Click "Take Exposure" to capture an image</p>
+                    </div>
+                    <div class="coordinate-overlay" id="coordinateOverlay" style="display: none;">
+                        <!-- Grid lines -->
+                        <div class="grid-lines">
+                            <!-- Vertical tick marks on bottom edge (9 equal divisions, no corner tick) -->
+                            <div class="grid-line vertical bottom" style="left: calc(100% * 1 / 10);"></div>
+                            <div class="grid-line vertical bottom" style="left: calc(100% * 2 / 10);"></div>
+                            <div class="grid-line vertical bottom" style="left: calc(100% * 3 / 10);"></div>
+                            <div class="grid-line vertical bottom" style="left: calc(100% * 4 / 10);"></div>
+                            <div class="grid-line vertical bottom" style="left: calc(100% * 5 / 10);"></div>
+                            <div class="grid-line vertical bottom" style="left: calc(100% * 6 / 10);"></div>
+                            <div class="grid-line vertical bottom" style="left: calc(100% * 7 / 10);"></div>
+                            <div class="grid-line vertical bottom" style="left: calc(100% * 8 / 10);"></div>
+                            <div class="grid-line vertical bottom" style="left: calc(100% * 9 / 10);"></div>
+                            
+                            <!-- Horizontal tick marks on left edge (9 equal divisions, no corner tick) -->
+                            <div class="grid-line horizontal" style="bottom: calc(100% * 1 / 10);"></div>
+                            <div class="grid-line horizontal" style="bottom: calc(100% * 2 / 10);"></div>
+                            <div class="grid-line horizontal" style="bottom: calc(100% * 3 / 10);"></div>
+                            <div class="grid-line horizontal" style="bottom: calc(100% * 4 / 10);"></div>
+                            <div class="grid-line horizontal" style="bottom: calc(100% * 5 / 10);"></div>
+                            <div class="grid-line horizontal" style="bottom: calc(100% * 6 / 10);"></div>
+                            <div class="grid-line horizontal" style="bottom: calc(100% * 7 / 10);"></div>
+                            <div class="grid-line horizontal" style="bottom: calc(100% * 8 / 10);"></div>
+                            <div class="grid-line horizontal" style="bottom: calc(100% * 9 / 10);"></div>
+                        </div>
+                        
+                        <!-- Axis labels -->
+                        <div class="axis-labels">
+                            <!-- X-axis labels (centered in each division) -->
+                            <div class="axis-tick x-tick" style="left: calc(100% * 0.5 / 10);">1</div>
+                            <div class="axis-tick x-tick" style="left: calc(100% * 1.5 / 10);">2</div>
+                            <div class="axis-tick x-tick" style="left: calc(100% * 2.5 / 10);">3</div>
+                            <div class="axis-tick x-tick" style="left: calc(100% * 3.5 / 10);">4</div>
+                            <div class="axis-tick x-tick" style="left: calc(100% * 4.5 / 10);">5</div>
+                            <div class="axis-tick x-tick" style="left: calc(100% * 5.5 / 10);">6</div>
+                            <div class="axis-tick x-tick" style="left: calc(100% * 6.5 / 10);">7</div>
+                            <div class="axis-tick x-tick" style="left: calc(100% * 7.5 / 10);">8</div>
+                            <div class="axis-tick x-tick" style="left: calc(100% * 8.5 / 10);">9</div>
+                            <div class="axis-tick x-tick" style="left: calc(100% * 9.5 / 10);">10</div>
+                            
+                            <!-- Y-axis labels (centered in each division, from bottom to top) -->
+                            <div class="axis-tick y-tick" style="top: calc(100% * 9.5 / 10);">A</div>
+                            <div class="axis-tick y-tick" style="top: calc(100% * 8.5 / 10);">B</div>
+                            <div class="axis-tick y-tick" style="top: calc(100% * 7.5 / 10);">C</div>
+                            <div class="axis-tick y-tick" style="top: calc(100% * 6.5 / 10);">D</div>
+                            <div class="axis-tick y-tick" style="top: calc(100% * 5.5 / 10);">E</div>
+                            <div class="axis-tick y-tick" style="top: calc(100% * 4.5 / 10);">F</div>
+                            <div class="axis-tick y-tick" style="top: calc(100% * 3.5 / 10);">G</div>
+                            <div class="axis-tick y-tick" style="top: calc(100% * 2.5 / 10);">H</div>
+                            <div class="axis-tick y-tick" style="top: calc(100% * 1.5 / 10);">I</div>
+                            <div class="axis-tick y-tick" style="top: calc(100% * 0.5 / 10);">J</div>
+                        </div>
+                    </div>
                 </div>
-                <div id="imageTimestamp" class="timestamp"></div>
             </div>
             
             <div class="controls-panel">
@@ -284,22 +426,19 @@
                 <div class="control-group">
                     <h3>Image Control</h3>
                     <button id="saveImageBtn" class="button save">Save Current Image</button>
+                    <button id="toggleOverlayBtn" class="button">Toggle Coordinate Overlay</button>
                 </div>
                 
                 <div class="control-group">
                     <h3>Camera Settings</h3>
                     
                     <div class="control-item">
-                        <label for="exposureSlider">Exposure Time (ms):</label>
-                        <input type="range" id="exposureSlider" min="10" max="5000" step="10" value="{{ (settings.exposure or 50) }}">
-                        <div id="exposureValue" class="range-value">{{ (settings.exposure or 50) }} ms</div>
+                        <label for="exposureInput">Exposure Time (ms):</label>
                         <input type="number" id="exposureInput" min="10" max="5000" step="1" value="{{ (settings.exposure or 50) }}" placeholder="Enter exposure in ms">
                     </div>
                     
                     <div class="control-item">
-                        <label for="isoSlider">ISO:</label>
-                        <input type="range" id="isoSlider" min="100" max="6400" step="100" value="{{ settings.iso or 100 }}">
-                        <div id="isoValue" class="range-value">ISO {{ settings.iso or 100 }}</div>
+                        <label for="isoInput">ISO:</label>
                         <input type="number" id="isoInput" min="100" max="6400" step="50" value="{{ settings.iso or 100 }}" placeholder="Enter ISO value">
                     </div>
                     
@@ -325,31 +464,17 @@
             document.getElementById('captureBtn').addEventListener('click', captureImage);
             document.getElementById('saveImageBtn').addEventListener('click', saveCurrentImage);
             document.getElementById('updateSettingsBtn').addEventListener('click', updateCameraSettings);
+            document.getElementById('toggleOverlayBtn').addEventListener('click', toggleCoordinateOverlay);
             
-            // Update slider value displays and sync with input boxes
-            document.getElementById('exposureSlider').addEventListener('input', function() {
-                document.getElementById('exposureValue').textContent = this.value + ' ms';
-                document.getElementById('exposureInput').value = this.value;
-            });
-            
-            document.getElementById('isoSlider').addEventListener('input', function() {
-                document.getElementById('isoValue').textContent = 'ISO ' + this.value;
-                document.getElementById('isoInput').value = this.value;
-            });
-            
-            // Update sliders when input boxes change
+            // Input validation
             document.getElementById('exposureInput').addEventListener('input', function() {
                 const value = Math.max(10, Math.min(5000, parseInt(this.value) || 50));
                 this.value = value;
-                document.getElementById('exposureSlider').value = value;
-                document.getElementById('exposureValue').textContent = value + ' ms';
             });
             
             document.getElementById('isoInput').addEventListener('input', function() {
                 const value = Math.max(100, Math.min(6400, parseInt(this.value) || 100));
                 this.value = value;
-                document.getElementById('isoSlider').value = value;
-                document.getElementById('isoValue').textContent = 'ISO ' + value;
             });
         });
         
@@ -392,14 +517,12 @@
                 if (data.success && data.image) {
                     const img = document.getElementById('cameraImage');
                     const placeholder = document.getElementById('imagePlaceholder');
-                    const timestamp = document.getElementById('imageTimestamp');
+                    const overlay = document.getElementById('coordinateOverlay');
                     
                     img.src = 'data:image/jpeg;base64,' + data.image;
                     img.style.display = 'block';
                     placeholder.style.display = 'none';
-                    
-                    const updateTime = new Date(data.timestamp);
-                    timestamp.textContent = 'Captured: ' + updateTime.toLocaleString();
+                    overlay.style.display = 'block';
                 } else {
                     console.log('No image available');
                 }
@@ -467,7 +590,7 @@
             btn.disabled = true;
             
             try {
-                // Use input box values (which are synchronized with sliders)
+                // Use input box values
                 const exposure = parseFloat(document.getElementById('exposureInput').value);
                 const iso = parseInt(document.getElementById('isoInput').value);
                 
@@ -495,6 +618,20 @@
             } finally {
                 btn.textContent = originalText;
                 btn.disabled = false;
+            }
+        }
+        
+        function toggleCoordinateOverlay() {
+            const overlay = document.getElementById('coordinateOverlay');
+            const img = document.getElementById('cameraImage');
+            
+            // Only toggle if image is visible
+            if (img.style.display === 'block') {
+                if (overlay.style.display === 'none') {
+                    overlay.style.display = 'block';
+                } else {
+                    overlay.style.display = 'none';
+                }
             }
         }
         
