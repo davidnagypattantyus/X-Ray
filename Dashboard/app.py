@@ -99,6 +99,22 @@ def get_camera_image():
     else:
         return jsonify({'error': 'No image available'}), 404
 
+@app.route('/api/camera/histogram')
+def get_camera_histogram():
+    """API endpoint to get the latest image histogram"""
+    if not live_camera:
+        return jsonify({'error': 'Camera not available'}), 503
+    
+    histogram_data = live_camera.get_latest_histogram()
+    if histogram_data:
+        return jsonify({
+            'success': True,
+            'histogram': histogram_data,
+            'timestamp': datetime.now().isoformat()
+        })
+    else:
+        return jsonify({'error': 'No histogram available'}), 404
+
 @app.route('/api/camera/save', methods=['POST'])
 def save_camera_image():
     """API endpoint to save the current image to desktop"""

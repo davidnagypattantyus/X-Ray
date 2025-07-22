@@ -17,6 +17,7 @@ class FlirLiveCamera:
         self.is_initialized = False
         self.latest_image = None
         self.latest_image_data = None
+        self.latest_histogram = None
         self.lock = threading.Lock()
         self._initialize_camera()
     
@@ -150,10 +151,14 @@ class FlirLiveCamera:
                 else:
                     img_base64 = None
                 
+                # Generate histogram for display
+                histogram_data = self._generate_histogram(image_data)
+                
                 # Store the latest image
                 with self.lock:
                     self.latest_image = img_base64
                     self.latest_image_data = image_data.copy()
+                    self.latest_histogram = histogram_data
                 
                 success = True
             else:
@@ -182,11 +187,48 @@ class FlirLiveCamera:
         with self.lock:
             return self.latest_image
     
+    def get_latest_histogram(self):
+        """Get the latest histogram data"""
+        with self.lock:
+            return self.latest_histogram
+    
+    def _generate_histogram(self, image_data):
+        """Generate histogram data from image using OpenCV"""
+        try:
+            # Calculate histogram for grayscale image (use the original grayscale data)
+            if len(image_data.shape) == 3:
+                # Convert to grayscale if color
+                gray_image = cv2.cvtColor(image_data, cv2.COLOR_RGB2GRAY)
+            else:
+                gray_image = image_data
+            
+            # Calculate histogram - 256 bins for 8-bit image
+            hist = cv2.calcHist([gray_image], [0], None, [256], [0, 256])
+            
+            # Convert to list for JSON serialization and flatten
+            hist_list = hist.flatten().tolist()
+            
+            # Create bins array (0-255)
+            bins = list(range(256))
+            
+            return {
+                'bins': bins,
+                'values': hist_list,
+                'total_pixels': int(gray_image.size),
+                'min_value': int(gray_image.min()),
+                'max_value': int(gray_image.max()),
+                'mean_value': float(gray_image.mean())
+            }
+        except Exception as e:
+            print(f"Error generating histogram: {e}")
+            return None
+    
     def clear_image(self):
         """Clear the current image"""
         with self.lock:
             self.latest_image = None
             self.latest_image_data = None
+            self.latest_histogram = None
     
     def save_current_image(self, save_path="/home/davidnagypattantyus/Desktop"):
         """Save the current image to desktop"""

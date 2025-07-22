@@ -16,14 +16,84 @@
             line-height: 1.5;
         }
         .container {
-            max-width: 1400px;
-            margin: 0 auto;
+            max-width: none;
+            margin: 0;
+            padding: 2% 2% 2.5% 2%;
+        }
+        
+        /* 3-Column Layout with Percentages */
+        .main-layout {
+            display: grid !important;
+            grid-template-columns: 48% 24% 24% !important;
+            gap: 2% !important;
+            align-items: start;
+        }
+        
+        /* Standardized Frame Styling */
+        .frame {
             background-color: #2a2a2a;
-            padding: 24px;
             border-radius: 12px;
             border: 1px solid #404040;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            padding: 24px;
+            box-sizing: border-box;
         }
+        
+        /* Image Frame - Grid Column 1 */
+        .image-frame {
+        }
+        
+        .image-display {
+            background-color: #333333;
+            border-radius: 12px;
+            padding: 0;
+            text-align: center;
+            aspect-ratio: 1 / 1;
+            border: 1px solid #404040;
+            margin-bottom: 16px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        .histogram-container {
+            padding: 20px 16px 24px 16px;
+            width: 100%;
+            box-sizing: border-box;
+            text-align: center;
+        }
+        
+        /* Camera Control Frame - Grid Column 2 */
+        .camera-control-frame {
+        }
+        
+        /* X-Ray Control Frame - Grid Column 3 */
+        .xray-control-frame {
+        }
+        
+        /* Standardized Button Based on "Take Exposure" */
+        .standard-button {
+            background-color: #666666;
+            color: #ffffff;
+            padding: 16px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 700;
+            transition: all 0.2s ease;
+            width: 100%;
+            margin-bottom: 12px;
+            letter-spacing: 0.01em;
+            text-transform: uppercase;
+            font-family: 'DIN', sans-serif;
+        }
+        
+        .standard-button:hover {
+            background-color: #777777;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+        
         h1 {
             color: #ffb000;
             text-align: center;
@@ -34,179 +104,24 @@
             margin-top: 0;
         }
         .camera-section {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 24px;
             margin-bottom: 20px;
         }
-        .image-display {
-            background-color: #333333;
-            border-radius: 4px;
-            padding: 0;
-            text-align: center;
-            width: 100%;
-            aspect-ratio: 1 / 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            position: relative;
-            border: 1px solid #4a4a4a;
+        
+        .image-and-histogram-column {
+            gap: 16px;
         }
+        
         .image-container {
             position: relative;
             width: 100%;
             height: 100%;
         }
+        
         .camera-image {
             width: 100%;
             height: 100%;
             object-fit: cover;
             border-radius: 12px;
-        }
-        .image-placeholder {
-            color: #b0b0b0;
-            font-size: 18px;
-            padding: 24px;
-            font-weight: 500;
-        }
-        .controls-panel {
-            background-color: #333333;
-            padding: 24px;
-            border-radius: 12px;
-            border: 1px solid #4a4a4a;
-        }
-        .control-group {
-            margin-bottom: 24px;
-        }
-        .control-group h3 {
-            margin-bottom: 16px;
-            color: #ffb000;
-            font-weight: 700;
-            font-size: 16px;
-            letter-spacing: -0.01em;
-            text-transform: uppercase;
-        }
-        .control-item {
-            margin-bottom: 20px;
-        }
-        label {
-            display: block;
-            margin-bottom: 8px;
-            color: #b0b0b0;
-            font-weight: 500;
-            font-size: 14px;
-        }
-        input[type="range"], input[type="number"] {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #555555;
-            border-radius: 8px;
-            box-sizing: border-box;
-            margin-bottom: 12px;
-            background-color: #404040;
-            color: #ffffff;
-            font-family: 'DIN', sans-serif;
-        }
-        input[type="range"] {
-            height: 44px;
-            margin-bottom: 8px;
-        }
-        input[type="number"] {
-            background-color: #404040;
-            font-size: 14px;
-            font-weight: 500;
-        }
-        input[type="number"]:focus {
-            outline: none;
-            border-color: #777777;
-            box-shadow: 0 0 8px rgba(119, 119, 119, 0.3);
-        }
-        .range-value {
-            text-align: center;
-            font-weight: 600;
-            color: #ffffff;
-            margin-top: 8px;
-            font-size: 14px;
-        }
-        .button {
-            background-color: #666666;
-            color: #ffffff;
-            padding: 14px 24px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
-            transition: all 0.2s ease;
-            width: 100%;
-            margin-bottom: 12px;
-            letter-spacing: 0.01em;
-            text-transform: uppercase;
-            font-family: 'DIN', sans-serif;
-        }
-        .button:hover {
-            background-color: #777777;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-        }
-        .button.capture {
-            background-color: #666666;
-            font-size: 15px;
-            padding: 16px 24px;
-            font-weight: 700;
-        }
-        .button.capture:hover {
-            background-color: #777777;
-        }
-        .button.save {
-            background-color: #666666;
-        }
-        .button.save:hover {
-            background-color: #777777;
-        }
-        .status-panel {
-            background-color: #404040;
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 24px;
-            border: 1px solid #555555;
-        }
-        .status-item {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 12px;
-        }
-        .status-label {
-            font-weight: 500;
-            color: #b0b0b0;
-            font-size: 14px;
-        }
-        .status-value {
-            color: #ffffff;
-            font-family: 'DIN', monospace;
-            font-size: 14px;
-            font-weight: 600;
-        }
-        .status-ready {
-            color: #cccccc;
-        }
-        .status-error {
-            color: #999999;
-        }
-        .timestamp {
-            position: absolute;
-            bottom: 12px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: rgba(0, 0, 0, 0.8);
-            color: #ffffff;
-            padding: 8px 12px;
-            border-radius: 6px;
-            font-size: 12px;
-            z-index: 10;
-            font-weight: 500;
         }
         
         /* Coordinate overlay styles */
@@ -266,9 +181,9 @@
         
         .crosshair-horizontal {
             position: absolute;
-            width: 20px; /* Same as tick mark length */
-            height: 1.5px; /* Same as tick mark thickness */
-            background-color: #ffb000; /* Same amber color */
+            width: 20px;
+            height: 1.5px;
+            background-color: #ffb000;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
@@ -277,9 +192,9 @@
         
         .crosshair-vertical {
             position: absolute;
-            width: 1.5px; /* Same as tick mark thickness */
-            height: 20px; /* Same as tick mark length */
-            background-color: #ffb000; /* Same amber color */
+            width: 1.5px;
+            height: 20px;
+            background-color: #ffb000;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
@@ -294,7 +209,7 @@
             height: 100%;
         }
         
-                .axis-tick {
+        .axis-tick {
             position: absolute;
             color: #ffb000;
             font-size: 12px;
@@ -307,17 +222,16 @@
             outline: none !important;
             box-shadow: none !important;
             text-shadow: none !important;
-
             font-family: 'DIN', monospace;
         }
         
         .x-tick {
-            bottom: 9px; /* Positioned 9px from bottom of image */
+            bottom: 9px;
             transform: translateX(-50%);
         }
         
         .y-tick {
-            left: 15px; /* Center between tick ends (5px and 25px): 15px from left */
+            left: 15px;
             transform: translateY(-50%);
         }
         
@@ -329,30 +243,37 @@
             text-align: center;
             font-weight: 500;
         }
+        
         .message.success {
             background-color: #404040;
             color: #e0e0e0;
             border: 1px solid #666666;
         }
+        
         .message.error {
             background-color: #3a3a3a;
             color: #cccccc;
             border: 1px solid #555555;
         }
+        
         .navigation {
             margin-top: 24px;
             text-align: center;
+            padding-bottom: 0;
         }
+        
         .navigation a {
             color: #b0b0b0;
             text-decoration: none;
             font-size: 14px;
             font-weight: 500;
         }
+        
         .navigation a:hover {
             color: #cccccc;
             text-decoration: underline;
         }
+        
         .capture-section {
             background-color: transparent;
             padding: 0;
@@ -379,85 +300,211 @@
             text-transform: uppercase;
             margin-bottom: 16px;
         }
+        .image-placeholder {
+            color: #b0b0b0;
+            font-size: 18px;
+            padding: 24px;
+            font-weight: 500;
+        }
+        
+        .histogram-container h3 {
+            display: none;
+        }
+        
+        #histogramCanvas {
+            width: 100%;
+            background-color: #2a2a2a;
+            border-radius: 4px;
+            display: block;
+            margin: 0 auto;
+        }
+        
+        .histogram-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 8px;
+            font-size: 12px;
+            color: #b0b0b0;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .histogram-stats span {
+            padding: 2px 8px;
+            background-color: #2a2a2a;
+            border-radius: 3px;
+        }
+        
+        .control-group {
+            margin-bottom: 24px;
+        }
+        
+        .control-group h3 {
+            margin-bottom: 16px;
+            color: #ffb000;
+            font-weight: 700;
+            font-size: 16px;
+            letter-spacing: -0.01em;
+            text-transform: uppercase;
+        }
+        
+        .control-item {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #b0b0b0;
+            font-weight: 500;
+            font-size: 14px;
+        }
+        
+        input[type="range"], input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #555555;
+            border-radius: 8px;
+            box-sizing: border-box;
+            margin-bottom: 12px;
+            background-color: #404040;
+            color: #ffffff;
+            font-family: 'DIN', sans-serif;
+        }
+        
+        input[type="range"] {
+            height: 44px;
+            margin-bottom: 8px;
+        }
+        
+        input[type="number"] {
+            background-color: #404040;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #777777;
+            box-shadow: 0 0 8px rgba(119, 119, 119, 0.3);
+        }
+        
+        .status-panel {
+            background-color: #404040;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            border: 1px solid #555555;
+        }
+        
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+        
+        .status-label {
+            font-weight: 500;
+            color: #b0b0b0;
+            font-size: 14px;
+        }
+        
+        .status-value {
+            color: #ffffff;
+            font-family: 'DIN', monospace;
+            font-size: 14px;
+            font-weight: 600;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>FLIR CAMERA CONTROL</h1>
-        
         <div id="messageArea"></div>
         
-        <div class="camera-section">
-            <div class="image-display">
-                <div class="image-container">
-                    <img id="cameraImage" class="camera-image" style="display: none;" alt="Camera capture">
-                    <div id="imagePlaceholder" class="image-placeholder">
-                        <p>NO IMAGE CAPTURED YET</p>
-                        <p>CLICK "TAKE EXPOSURE" TO CAPTURE AN IMAGE</p>
+        <div class="main-layout">
+            <div class="image-frame frame">
+                <div class="image-display">
+                    <div class="image-container">
+                        <img id="cameraImage" class="camera-image" style="display: none;" alt="Camera capture">
+                        <div id="imagePlaceholder" class="image-placeholder">
+                            <p>NO IMAGE CAPTURED YET</p>
+                            <p>CLICK "TAKE EXPOSURE" TO CAPTURE AN IMAGE</p>
+                        </div>
+                        <div class="coordinate-overlay" id="coordinateOverlay" style="display: none;">
+                            <!-- Crosshair -->
+                            <div class="crosshair">
+                                <div class="crosshair-horizontal"></div>
+                                <div class="crosshair-vertical"></div>
+                            </div>
+                            
+                            <!-- Grid lines -->
+                            <div class="grid-lines">
+                                <!-- Vertical tick marks on bottom edge (9 equal divisions, no corner tick) -->
+                                <div class="grid-line vertical bottom" style="left: calc(100% * 1 / 10);"></div>
+                                <div class="grid-line vertical bottom" style="left: calc(100% * 2 / 10);"></div>
+                                <div class="grid-line vertical bottom" style="left: calc(100% * 3 / 10);"></div>
+                                <div class="grid-line vertical bottom" style="left: calc(100% * 4 / 10);"></div>
+                                <div class="grid-line vertical bottom" style="left: calc(100% * 5 / 10);"></div>
+                                <div class="grid-line vertical bottom" style="left: calc(100% * 6 / 10);"></div>
+                                <div class="grid-line vertical bottom" style="left: calc(100% * 7 / 10);"></div>
+                                <div class="grid-line vertical bottom" style="left: calc(100% * 8 / 10);"></div>
+                                <div class="grid-line vertical bottom" style="left: calc(100% * 9 / 10);"></div>
+                                
+                                <!-- Horizontal tick marks on left edge (9 equal divisions, no corner tick) -->
+                                <div class="grid-line horizontal" style="bottom: calc(100% * 1 / 10);"></div>
+                                <div class="grid-line horizontal" style="bottom: calc(100% * 2 / 10);"></div>
+                                <div class="grid-line horizontal" style="bottom: calc(100% * 3 / 10);"></div>
+                                <div class="grid-line horizontal" style="bottom: calc(100% * 4 / 10);"></div>
+                                <div class="grid-line horizontal" style="bottom: calc(100% * 5 / 10);"></div>
+                                <div class="grid-line horizontal" style="bottom: calc(100% * 6 / 10);"></div>
+                                <div class="grid-line horizontal" style="bottom: calc(100% * 7 / 10);"></div>
+                                <div class="grid-line horizontal" style="bottom: calc(100% * 8 / 10);"></div>
+                                <div class="grid-line horizontal" style="bottom: calc(100% * 9 / 10);"></div>
+                            </div>
+                            
+                            <!-- Axis labels -->
+                            <div class="axis-labels">
+                                <!-- X-axis labels (centered in each division) -->
+                                <div class="axis-tick x-tick" style="left: calc(100% * 0.5 / 10);">1</div>
+                                <div class="axis-tick x-tick" style="left: calc(100% * 1.5 / 10);">2</div>
+                                <div class="axis-tick x-tick" style="left: calc(100% * 2.5 / 10);">3</div>
+                                <div class="axis-tick x-tick" style="left: calc(100% * 3.5 / 10);">4</div>
+                                <div class="axis-tick x-tick" style="left: calc(100% * 4.5 / 10);">5</div>
+                                <div class="axis-tick x-tick" style="left: calc(100% * 5.5 / 10);">6</div>
+                                <div class="axis-tick x-tick" style="left: calc(100% * 6.5 / 10);">7</div>
+                                <div class="axis-tick x-tick" style="left: calc(100% * 7.5 / 10);">8</div>
+                                <div class="axis-tick x-tick" style="left: calc(100% * 8.5 / 10);">9</div>
+                                <div class="axis-tick x-tick" style="left: calc(100% * 9.5 / 10);">10</div>
+                                
+                                <!-- Y-axis labels (centered in each division, from bottom to top) -->
+                                <div class="axis-tick y-tick" style="top: calc(100% * 9.5 / 10);">A</div>
+                                <div class="axis-tick y-tick" style="top: calc(100% * 8.5 / 10);">B</div>
+                                <div class="axis-tick y-tick" style="top: calc(100% * 7.5 / 10);">C</div>
+                                <div class="axis-tick y-tick" style="top: calc(100% * 6.5 / 10);">D</div>
+                                <div class="axis-tick y-tick" style="top: calc(100% * 5.5 / 10);">E</div>
+                                <div class="axis-tick y-tick" style="top: calc(100% * 4.5 / 10);">F</div>
+                                <div class="axis-tick y-tick" style="top: calc(100% * 3.5 / 10);">G</div>
+                                <div class="axis-tick y-tick" style="top: calc(100% * 2.5 / 10);">H</div>
+                                <div class="axis-tick y-tick" style="top: calc(100% * 1.5 / 10);">I</div>
+                                <div class="axis-tick y-tick" style="top: calc(100% * 0.5 / 10);">J</div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="coordinate-overlay" id="coordinateOverlay" style="display: none;">
-                        <!-- Crosshair -->
-                        <div class="crosshair">
-                            <div class="crosshair-horizontal"></div>
-                            <div class="crosshair-vertical"></div>
-                        </div>
-                        
-                        <!-- Grid lines -->
-                        <div class="grid-lines">
-                            <!-- Vertical tick marks on bottom edge (9 equal divisions, no corner tick) -->
-                            <div class="grid-line vertical bottom" style="left: calc(100% * 1 / 10);"></div>
-                            <div class="grid-line vertical bottom" style="left: calc(100% * 2 / 10);"></div>
-                            <div class="grid-line vertical bottom" style="left: calc(100% * 3 / 10);"></div>
-                            <div class="grid-line vertical bottom" style="left: calc(100% * 4 / 10);"></div>
-                            <div class="grid-line vertical bottom" style="left: calc(100% * 5 / 10);"></div>
-                            <div class="grid-line vertical bottom" style="left: calc(100% * 6 / 10);"></div>
-                            <div class="grid-line vertical bottom" style="left: calc(100% * 7 / 10);"></div>
-                            <div class="grid-line vertical bottom" style="left: calc(100% * 8 / 10);"></div>
-                            <div class="grid-line vertical bottom" style="left: calc(100% * 9 / 10);"></div>
-                            
-                            <!-- Horizontal tick marks on left edge (9 equal divisions, no corner tick) -->
-                            <div class="grid-line horizontal" style="bottom: calc(100% * 1 / 10);"></div>
-                            <div class="grid-line horizontal" style="bottom: calc(100% * 2 / 10);"></div>
-                            <div class="grid-line horizontal" style="bottom: calc(100% * 3 / 10);"></div>
-                            <div class="grid-line horizontal" style="bottom: calc(100% * 4 / 10);"></div>
-                            <div class="grid-line horizontal" style="bottom: calc(100% * 5 / 10);"></div>
-                            <div class="grid-line horizontal" style="bottom: calc(100% * 6 / 10);"></div>
-                            <div class="grid-line horizontal" style="bottom: calc(100% * 7 / 10);"></div>
-                            <div class="grid-line horizontal" style="bottom: calc(100% * 8 / 10);"></div>
-                            <div class="grid-line horizontal" style="bottom: calc(100% * 9 / 10);"></div>
-                        </div>
-                        
-                        <!-- Axis labels -->
-                        <div class="axis-labels">
-                            <!-- X-axis labels (centered in each division) -->
-                            <div class="axis-tick x-tick" style="left: calc(100% * 0.5 / 10);">1</div>
-                            <div class="axis-tick x-tick" style="left: calc(100% * 1.5 / 10);">2</div>
-                            <div class="axis-tick x-tick" style="left: calc(100% * 2.5 / 10);">3</div>
-                            <div class="axis-tick x-tick" style="left: calc(100% * 3.5 / 10);">4</div>
-                            <div class="axis-tick x-tick" style="left: calc(100% * 4.5 / 10);">5</div>
-                            <div class="axis-tick x-tick" style="left: calc(100% * 5.5 / 10);">6</div>
-                            <div class="axis-tick x-tick" style="left: calc(100% * 6.5 / 10);">7</div>
-                            <div class="axis-tick x-tick" style="left: calc(100% * 7.5 / 10);">8</div>
-                            <div class="axis-tick x-tick" style="left: calc(100% * 8.5 / 10);">9</div>
-                            <div class="axis-tick x-tick" style="left: calc(100% * 9.5 / 10);">10</div>
-                            
-                            <!-- Y-axis labels (centered in each division, from bottom to top) -->
-                            <div class="axis-tick y-tick" style="top: calc(100% * 9.5 / 10);">A</div>
-                            <div class="axis-tick y-tick" style="top: calc(100% * 8.5 / 10);">B</div>
-                            <div class="axis-tick y-tick" style="top: calc(100% * 7.5 / 10);">C</div>
-                            <div class="axis-tick y-tick" style="top: calc(100% * 6.5 / 10);">D</div>
-                            <div class="axis-tick y-tick" style="top: calc(100% * 5.5 / 10);">E</div>
-                            <div class="axis-tick y-tick" style="top: calc(100% * 4.5 / 10);">F</div>
-                            <div class="axis-tick y-tick" style="top: calc(100% * 3.5 / 10);">G</div>
-                            <div class="axis-tick y-tick" style="top: calc(100% * 2.5 / 10);">H</div>
-                            <div class="axis-tick y-tick" style="top: calc(100% * 1.5 / 10);">I</div>
-                            <div class="axis-tick y-tick" style="top: calc(100% * 0.5 / 10);">J</div>
-                        </div>
+                </div>
+                
+                <!-- Histogram Display - directly under the image -->
+                <div class="histogram-container" id="histogramContainer">
+                    <h3>IMAGE HISTOGRAM</h3>
+                    <canvas id="histogramCanvas"></canvas>
+                    <div class="histogram-stats" id="histogramStats">
+                        <span>Min: <span id="histMin">-</span></span>
+                        <span>Max: <span id="histMax">-</span></span>
+                        <span>Mean: <span id="histMean">-</span></span>
+                        <span>Pixels: <span id="histPixels">-</span></span>
                     </div>
                 </div>
             </div>
             
-            <div class="controls-panel">
+            <div class="camera-control-frame frame">
                 <div class="status-panel">
                     <h3>CAMERA STATUS</h3>
                     <div class="status-item">
@@ -476,13 +523,13 @@
                 
                 <div class="capture-section">
                     <h3>CAPTURE CONTROL</h3>
-                    <button id="captureBtn" class="button capture">TAKE EXPOSURE</button>
+                    <button id="captureBtn" class="standard-button">TAKE EXPOSURE</button>
                 </div>
                 
                 <div class="control-group">
                     <h3>IMAGE CONTROL</h3>
-                    <button id="saveImageBtn" class="button save">SAVE CURRENT IMAGE</button>
-                    <button id="toggleOverlayBtn" class="button">TOGGLE COORDINATE OVERLAY</button>
+                    <button id="saveImageBtn" class="standard-button">SAVE CURRENT IMAGE</button>
+                    <button id="toggleOverlayBtn" class="standard-button">TOGGLE COORDINATE OVERLAY</button>
                 </div>
                 
                 <div class="control-group">
@@ -498,8 +545,14 @@
                         <input type="number" id="isoInput" min="100" max="6400" step="50" value="{{ settings.iso or 100 }}" placeholder="ENTER ISO VALUE">
                     </div>
                     
-                    <button id="updateSettingsBtn" class="button">UPDATE SETTINGS</button>
+                    <button id="updateSettingsBtn" class="standard-button">UPDATE SETTINGS</button>
                 </div>
+            </div>
+            
+            <div class="xray-control-frame frame">
+                <h3>X-RAY CONTROL</h3>
+                <p>X-ray specific controls would go here.</p>
+                <button class="standard-button">EXAMPLE BUTTON</button>
             </div>
         </div>
         
@@ -516,21 +569,32 @@
             updateCameraStatus();
             statusUpdateInterval = setInterval(updateCameraStatus, 10000);
             
+            // Check for existing image and histogram on page load
+            updateCameraImage();
+            
             // Set up event listeners
             document.getElementById('captureBtn').addEventListener('click', captureImage);
             document.getElementById('saveImageBtn').addEventListener('click', saveCurrentImage);
             document.getElementById('updateSettingsBtn').addEventListener('click', updateCameraSettings);
             document.getElementById('toggleOverlayBtn').addEventListener('click', toggleCoordinateOverlay);
             
-            // Input validation
-            document.getElementById('exposureInput').addEventListener('input', function() {
-                const value = Math.max(10, Math.min(5000, parseInt(this.value) || 50));
-                this.value = value;
+            // Input validation - only validate when user finishes editing
+            document.getElementById('exposureInput').addEventListener('blur', function() {
+                if (this.value === '' || isNaN(this.value)) {
+                    this.value = 50; // Default value
+                } else {
+                    const value = Math.max(10, Math.min(5000, parseInt(this.value)));
+                    this.value = value;
+                }
             });
             
-            document.getElementById('isoInput').addEventListener('input', function() {
-                const value = Math.max(100, Math.min(6400, parseInt(this.value) || 100));
-                this.value = value;
+            document.getElementById('isoInput').addEventListener('blur', function() {
+                if (this.value === '' || isNaN(this.value)) {
+                    this.value = 100; // Default value
+                } else {
+                    const value = Math.max(100, Math.min(6400, parseInt(this.value)));
+                    this.value = value;
+                }
             });
         });
         
@@ -579,12 +643,164 @@
                     img.style.display = 'block';
                     placeholder.style.display = 'none';
                     overlay.style.display = 'block';
+                    
+                    // Also update histogram
+                    updateHistogram();
                 } else {
                     console.log('No image available');
                 }
             } catch (error) {
                 console.error('Error fetching camera image:', error);
             }
+        }
+        
+        async function updateHistogram() {
+            try {
+                const response = await fetch('/api/camera/histogram');
+                const data = await response.json();
+                
+                if (data.success && data.histogram) {
+                    const histContainer = document.getElementById('histogramContainer');
+                    histContainer.style.display = 'block';
+                    
+                    // Update statistics
+                    document.getElementById('histMin').textContent = data.histogram.min_value;
+                    document.getElementById('histMax').textContent = data.histogram.max_value;
+                    document.getElementById('histMean').textContent = data.histogram.mean_value.toFixed(1);
+                    document.getElementById('histPixels').textContent = data.histogram.total_pixels.toLocaleString();
+                    
+                    // Wait a moment for container to be visible, then draw histogram
+                    setTimeout(() => drawHistogram(data.histogram), 100);
+                }
+            } catch (error) {
+                console.error('Error fetching histogram:', error);
+            }
+        }
+        
+        function drawHistogram(histogramData) {
+            const canvas = document.getElementById('histogramCanvas');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            
+            // Calculate histogram height as 1/3 of the image container (was 1/5)
+            const imageContainer = document.querySelector('.image-display');
+            const imageRect = imageContainer.getBoundingClientRect();
+            const histogramHeight = Math.max(200, Math.floor(imageRect.height / 3)); // Minimum 200px, 1/3 height
+            
+            // Set canvas size for crisp rendering
+            const canvasRect = canvas.getBoundingClientRect();
+            const canvasWidth = Math.max(400, canvasRect.width); // Minimum 400px width
+            
+            // Set canvas dimensions explicitly
+            canvas.width = canvasWidth * window.devicePixelRatio;
+            canvas.height = histogramHeight * window.devicePixelRatio;
+            canvas.style.width = canvasWidth + 'px';
+            canvas.style.height = histogramHeight + 'px';
+            
+            console.log(`Canvas sizing: logical=${canvasWidth}x${histogramHeight}, physical=${canvas.width}x${canvas.height}`);
+            
+            // Force container to resize to accommodate canvas
+            const container = document.getElementById('histogramContainer');
+            const totalHeight = histogramHeight + 120; // Canvas height + padding + title + stats + extra margin
+            container.style.height = totalHeight + 'px';
+            container.style.minHeight = totalHeight + 'px';
+            console.log(`Set container height to ${totalHeight}px for histogram height ${histogramHeight}px`);
+            
+            ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+            
+                        // Clear canvas
+            ctx.fillStyle = '#2a2a2a';
+            ctx.fillRect(0, 0, canvasWidth, histogramHeight);
+            
+
+
+ 
+            
+            const bins = histogramData.bins;
+            const values = histogramData.values;
+            
+            if (!bins || !values || bins.length === 0 || values.length === 0) {
+                return;
+            }
+            
+            const maxValue = Math.max(...values);
+            // Use improved scaling for X-ray images
+            const sortedValues = [...values].sort((a, b) => b - a);
+            const secondMax = sortedValues[1] || maxValue;
+            const ratio = maxValue / secondMax;
+            
+            console.log(`Histogram analysis: max=${maxValue}, second=${secondMax}, ratio=${ratio.toFixed(2)}`);
+            
+            // Use capped visualization if there's significant skew (ratio > 2)
+            let displayMaxValue = maxValue;
+            if (ratio > 2) {
+                displayMaxValue = secondMax * 3; // Use 3x the second largest value
+                console.log(`Using capped max: ${displayMaxValue} (was ${maxValue})`);
+            }
+            
+            // Calculate bar width
+            const barWidth = canvasWidth / bins.length;
+            
+            // Draw histogram bars with simplified positioning
+            ctx.fillStyle = '#ffb000';
+            let barsDrawn = 0;
+            let maxBarHeight = 0;
+            let totalBars = 0;
+            
+
+            
+            for (let i = 0; i < bins.length; i++) {
+                if (values[i] > 0) {
+                    const clampedValue = Math.min(values[i], displayMaxValue);
+                    const normalizedHeight = clampedValue / displayMaxValue;
+                    const maxDrawHeight = histogramHeight - 40; // Leave more margin
+                    const barHeight = Math.max(normalizedHeight * maxDrawHeight, 5); // Minimum 5px for visibility
+                    
+                    const x = i * barWidth;
+                    const y = histogramHeight - barHeight - 20; // Fixed 20px bottom margin
+                    const width = Math.max(barWidth - 0.5, 0.5);
+                    
+                    if (barHeight > maxBarHeight) maxBarHeight = barHeight;
+                    totalBars++;
+                    if (barHeight > 1) barsDrawn++;
+                    
+                    // Debug first few significant bars
+                    if (i < 10 || (i > 240 && i < 256)) {
+                        console.log(`Bar ${i}: value=${values[i]}, clamped=${clampedValue}, norm=${normalizedHeight.toFixed(4)}, height=${barHeight.toFixed(1)}, x=${x.toFixed(1)}, y=${y.toFixed(1)}`);
+                    }
+                    
+                    // Draw the bar
+                    ctx.fillRect(x, y, width, barHeight);
+                }
+            }
+            
+            console.log(`Drew ${totalBars} bars, ${barsDrawn} visible, max height: ${maxBarHeight.toFixed(1)}`);
+            console.log(`Canvas dimensions: ${canvasWidth}x${histogramHeight}, bar width: ${barWidth.toFixed(2)}`);
+            
+
+            
+            // Draw axis labels (simplified)
+            ctx.fillStyle = '#b0b0b0';
+            ctx.font = '10px monospace';
+            ctx.textAlign = 'center';
+            
+            // X-axis labels (0, 64, 128, 192, 255)
+            const xLabels = [0, 64, 128, 192, 255];
+            for (const label of xLabels) {
+                const x = (label / 255) * canvasWidth;
+                ctx.fillText(label.toString(), x, histogramHeight - 3);
+            }
+            
+            // Add indication if we're using capped scaling
+            if (displayMaxValue < maxValue) {
+                ctx.fillStyle = '#ff6b00';
+                ctx.font = '9px monospace';
+                ctx.textAlign = 'right';
+                ctx.fillText('(capped for visibility)', canvasWidth - 5, 15);
+            }
+            
+
         }
         
         async function updateCameraStatus() {
@@ -704,7 +920,7 @@
                 messageDiv.remove();
             }, 5000);
         }
-        
+
         // Clean up intervals when page is unloaded
         window.addEventListener('beforeunload', function() {
             if (statusUpdateInterval) clearInterval(statusUpdateInterval);
